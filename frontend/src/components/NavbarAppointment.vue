@@ -18,9 +18,10 @@
               <!-- <a class="nav-link active" aria-current="page" href="#">Create appointment</a>
               <a class="nav-link active" aria-current="page" href="#">Manage appointments</a>
               <a class="nav-link active" aria-current="page" href="#">Edit Profile</a> -->
+              <router-link class="nav-link active" to="/home-page">Home</router-link>
               <router-link class="nav-link active" to="/create-appointment">Create appointment</router-link>
-              <router-link class="nav-link active" to="/">Manage appointments</router-link>
-              <router-link class="nav-link active" to="/edit-profile">Edit Profile</router-link>
+              <router-link class="nav-link active" to="/manage-appointment">Manage appointments</router-link>
+              <!-- <router-link class="nav-link active" to="/edit-profile">Edit Profile</router-link> -->
             </li>
             <!-- <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
@@ -49,11 +50,6 @@
   </nav>
 </template>
 
-<!-- <script>
-export default {
-  name: 'NavbarAppointment',
-};
-</script> -->
 
 <script>
 import { computed } from 'vue';
@@ -66,6 +62,8 @@ export default {
 
     const pageTitle = computed(() => {
       switch (route.name) {
+        case 'HomePage':
+          return 'Home';
         case 'CreateAppointment':
           return 'Create Appointment';
         case 'ManageAppointment':
@@ -73,7 +71,7 @@ export default {
         case 'EditProfile':
           return 'Edit Profile';
         default:
-          return 'Manage Appointments';
+          return 'Home';
       }
     });
 

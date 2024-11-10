@@ -65,8 +65,8 @@
   
               <!-- Buttons -->
               <div class="d-flex justify-content-between">
-                <button type="submit" class="btn btn-primary">Create Appointment</button>
-                <button type="button" class="btn btn-success" @click="scheduleAppointment">Schedule</button>
+                <!-- <button type="submit" class="btn btn-primary">Create Appointment</button> -->
+                <button type="button" class="btn btn-success ms-auto"  @click="scheduleAppointment">Create Appointment</button>
               </div>
             </form>
           </div>
@@ -121,7 +121,7 @@
   };
   </script>
   
-  <style scoped>
+  <style>
   .create-appointment {
     height: 100vh;
     display: flex;

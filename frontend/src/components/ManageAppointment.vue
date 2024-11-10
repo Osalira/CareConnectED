@@ -51,7 +51,7 @@
   };
   </script>
   
-  <style scoped>
+  <style>
   /* Styles for the page layout */
   .manage-appointment {
     height: 100vh;
