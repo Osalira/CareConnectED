@@ -12,5 +12,5 @@ class Employee(AbstractUser):
     # Remove 'username' field if not needed
     username = None
 
-    USERNAME_FIELD = 'employee_id'  # Set employee_id as the unique identifier for authentication
-    REQUIRED_FIELDS = ['first_name', 'last_name']  # Other required fields
+    USERNAME_FIELD = 'employee_id'  # Set employeeId as the unique identifier for authentication
+    REQUIRED_FIELDS = ['first_name', 'last_ame']  # Other required fields

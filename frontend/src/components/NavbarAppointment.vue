@@ -21,7 +21,8 @@
               <router-link class="nav-link active" to="/home-page">Home</router-link>
               <router-link class="nav-link active" to="/create-appointment">Create appointment</router-link>
               <router-link class="nav-link active" to="/manage-appointment">Manage appointments</router-link>
-              <!-- <router-link class="nav-link active" to="/edit-profile">Edit Profile</router-link> -->
+              <!-- Logout option here -->
+              <a class="nav-link active" href="#" @click.prevent="logout">Logout</a>
             </li>
             <!-- <li class="nav-item">
               <a class="nav-link" href="#">Link</a>
@@ -53,12 +54,15 @@
 
 <script>
 import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useAuthStore } from '../store/auth';
 
 export default {
   name: 'NavbarAppointment',
   setup() {
     const route = useRoute();
+    const router = useRouter();
+    const authStore = useAuthStore();
 
     const pageTitle = computed(() => {
       switch (route.name) {
@@ -75,8 +79,14 @@ export default {
       }
     });
 
+    const logout = async () => {
+      await authStore.logout(router);
+      // router.push({ name: 'SignInPage' }); // Redirect to sign-in page after logout
+    };
+
     return {
       pageTitle,
+      logout,
     };
   },
 };

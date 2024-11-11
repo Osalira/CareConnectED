@@ -60,51 +60,60 @@
     </div>
 </template>
   
-  <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        firstName: '',
-        lastName: '',
-        employeeId: '',
-        password: '',
-      };
-    },
-    methods: {
-        async signUp() {
-            try {
-                const response = await axios.post('http://127.0.0.1:8001/api/auth/users/', {
-                    first_name: this.firstName,
-                    last_name: this.lastName,
-                    employee_id: this.employeeId,
-                    password: this.password,
-                });
-                console.log('Sign-up response:', response.data);
-                alert('Account created successfully! Please sign in.');
-                this.$router.push('/signin');
-            } catch (error) {
-                console.error('Error during sign-up:', error);
+<script>
+import { getCSRFToken } from '../store/auth'
 
-                // Check if error.response exists before accessing error.response.data
-                if (error.response && error.response.data) {
-                    console.log(error.response.data); // Logs specific error messages from backend
-                    alert(`Error: ${error.response.data.detail || 'Unable to create account.'}`);
-                } else {
-                    alert('An unexpected error occurred. Please try again later.');
-                }
-            }
+export default {
+  data() {
+    return {
+      firstName: '',
+      lastName: '',
+      employeeId: '',
+      password: '',
+      error: '',
+      success: ''
+    }
+  },
+  computed: {
+    registerValid() {
+      return this.firstName && this.lastName && this.employeeId && this.password;
+    }
+  },
+  methods: {
+    async signUp() {
+      try {
+        const response = await fetch('http://localhost:8001/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+          },
+          body: JSON.stringify({
+            first_name: this.firstName,  // Add first_name
+            last_name: this.lastName, // Add last_name
+            employee_id: this.employeeId,
+            password: this.password
+                 
+          }),
+          credentials: 'include'
+        });
+        const data = await response.json();
+        if (response.ok) {
+          this.success = 'Registration successful! Please log in.';
+          setTimeout(() => {
+            this.$router.push('/signin');
+          }, 1000);
+        } else {
+          this.error = data.error || 'Registration failed';
         }
+      } catch (err) {
+        this.error = 'An error occurred during registration: ' + err;
+      }
+    }
+  }
+}
+</script>
 
-    },
-    computed: {
-      registerValid() {
-        return this.firstName && this.lastName && this.employeeId && this.password;
-      },
-    },
-  };
-  </script>
   
 <style lang="scss" scoped>
 

@@ -39,6 +39,8 @@
               </div>
               <button type="submit" class="action" :disabled="!loginValid">Sign In</button>
             </form>
+            <p v-if="error" class="error">{{ error }}</p>
+
           </div>
         </div>
       </div>
@@ -46,49 +48,56 @@
   </template>
   
   <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        employeeId: '',
-        password: '',
-      };
-    },
-    methods: {
-      async signIn() {
-        try {
-          const response = await axios.post('/api/auth/jwt/create/', {
-            employee_id: this.employeeId,
-            password: this.password,
-          });
-          const { access } = response.data;
-          localStorage.setItem('token', access);
-          await this.getEmployeeDetails();
-          this.$router.push('/');
-        } catch (error) {
-          console.error('Error during sign-in:', error);
-          alert('Invalid credentials.');
+        import { useAuthStore } from '../store/auth'
+
+        export default {
+        setup() {
+            const authStore = useAuthStore()
+            return {
+            authStore
+            }
+        },
+        data() {
+            return {
+            employeeId: "", // Renamed for consistency
+            password: "",
+            error: ""
+            }
+        },
+        computed: {
+            loginValid() {
+            return this.employeeId && this.password;
+            }
+        },
+        methods: {
+            async signIn() {
+            try {
+                await this.authStore.login(this.employeeId, this.password, this.$router)
+                if (!this.authStore.isAuthenticated) {
+                this.error = 'Login failed. Please check your credentials.'
+                }
+            } catch (err) {
+                this.error = 'An error occurred during login.'
+            }
+            },
+            resetError() {
+            this.error = ""
+            }
         }
-      },
-      async getEmployeeDetails() {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('/api/auth/users/me/', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const { first_name, last_name } = response.data;
-        localStorage.setItem('employeeName', `${first_name} ${last_name}`);
-      },
-    },
-    computed: {
-      loginValid() {
-        return this.employeeId && this.password;
-      },
-    },
-  };
+        }
   </script>
+
+ 
   
   <style lang="scss" scoped>
+
+  // Style for the error message
+  .error {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    }
+
 
   html, body, #app {
     height: 100%;

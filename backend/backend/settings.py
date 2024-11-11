@@ -51,17 +51,65 @@ INSTALLED_APPS = [
 ]
 
 #//
-# Allow specific origins (your frontend URL)
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8081",  # Frontend URL
+
+AUTHENTICATION_BACKENDS = [
+    'backend.customAuth_backends.EmployeeIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
+
+#//
+# Allow specific origins (your frontend URL)
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]  # We add your frontend URL here.
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']  # We add your frontend URL here.
 
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+#//
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+DJOSER = {
+    'USER_ID_FIELD': 'employee_id',  # Set employee_id as the user ID field
+    'LOGIN_FIELD': 'employee_id',  # Use employee_id for login
+}
+
+AUTH_USER_MODEL = 'employees.Employee'
+
+
+
+
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+#//
+
 MIDDLEWARE = [
+    #
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    #//
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,9 +117,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -104,38 +150,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-#//
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
-
-
-DJOSER = {
-    'USER_ID_FIELD': 'employee_id',  # Set employee_id as the user ID field
-    'LOGIN_FIELD': 'employee_id',  # Use employee_id for login
-}
-
-AUTH_USER_MODEL = 'employees.Employee'
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'root': {
-        'handlers': ['console'],
-        'level': 'DEBUG',
-    },
-}
-#//
 
 
 # Password validation

@@ -8,7 +8,7 @@ import CreateAppointment from './components/CreateAppointment.vue';
 
 const routes = [
   {
-    path: '/',
+    path: '/signin',
     name: 'SignInPage',
     component: SignInPage,  // Default route is the sign-in page
   },
