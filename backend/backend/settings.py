@@ -50,12 +50,13 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-#//
+#//This is a set up in the customAuth_backends.py that allows to use the authenticate
+#//function to check against employeeId instead of the default username
 
-AUTHENTICATION_BACKENDS = [
-    'backend.customAuth_backends.EmployeeIDBackend',
-    'django.contrib.auth.backends.ModelBackend',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'backend.customAuth_backends.EmployeeIDBackend',
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
 
 #//
 # Allow specific origins (your frontend URL)
