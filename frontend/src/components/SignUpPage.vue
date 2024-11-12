@@ -12,7 +12,7 @@
               <div class="title">Create an Account</div>
               <div class="subtitle">
                 Already have an account?
-                <router-link class="subtitle-action" to="/signin">
+                <router-link class="subtitle-action" to="/">
                   Sign In
                 </router-link>
               </div>

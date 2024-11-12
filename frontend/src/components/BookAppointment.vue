@@ -1,37 +1,37 @@
 <!-- src/components/BookAppointment.vue -->
 <template>
-    <div class="book-appointment">
+    <div class="book-appointment ">
     <!-- Navbar -->
-     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
+     <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+      <div class="container-fluid ">
         <!-- Logo Section -->
         <a class="navbar-brand" href="#">
           <img src="https://www.mistered.de/MisterEDk.png" alt="Logo" width="120" />
         </a>
 
-        <!-- Right Side: Staff Question and Sign In Button -->
+        <!-- Right Side: Changed Mind question and Log out Button -->
         <div class="d-flex align-items-center ms-auto">
-          <span class="fs-5 me-2 fw-bold">Are you a staff member?</span>
-          <router-link to="/signin" class="btn btn-lg btn-primary ms-2">Sign In</router-link>
+          <span class="fs-5 me-2 fw-bold">Changed your Mind?</span>
+          <router-link to="/" class="btn  btn-primary ms-2">Log Out</router-link>
         </div>
       </div>
     </nav>
-      <div class="container my-5">
-        <h2 class="text-center mb-4">Appointment Details</h2>
+      <div class="container mb-3 ">
+        <h2 class="text-center mb-4 mt-3">Appointment Details</h2>
         <form @submit.prevent="submitAppointment">
           <!-- Personal Information -->
-          <div class="mb-3">
+          <div class="mb-2">
             <label for="name" class="form-label">Full Name</label>
             <input type="text" id="name" v-model="name" class="form-control" required placeholder="Enter your full name" />
           </div>
           
-          <div class="mb-3">
+          <div class="mb-2">
             <label for="address" class="form-label">Address</label>
             <input type="text" id="address" v-model="address" class="form-control" required placeholder="Enter your address" />
           </div>
     
           <!-- Phone Number -->
-          <div class="mb-3">
+          <div class="mb-2">
             <label for="phone" class="form-label">Phone Number</label>
             <input
               type="tel"
@@ -46,7 +46,7 @@
           </div>
   
           <!-- Health Insurance Number -->
-          <div class="mb-3">
+          <div class="mb-2">
             <label for="insurance" class="form-label">Health Insurance Number</label>
             <input type="text" id="insurance" v-model="insuranceNumber" class="form-control" required placeholder="Enter your health insurance number" />
           </div>

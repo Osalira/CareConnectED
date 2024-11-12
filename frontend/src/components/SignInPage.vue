@@ -207,7 +207,7 @@
     border-radius: 15px;
     max-width: 400px;
     padding: 25px 55px;
-    margin-top: 120px;
+    margin-top: 100px;
     animation: slideInTop 1s;
     
   }
