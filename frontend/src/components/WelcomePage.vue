@@ -10,8 +10,8 @@
 
         <!-- Right Side: Staff Question and Sign In Button -->
         <div class="d-flex align-items-center ms-auto">
-          <span class="me-2">Are you staff?</span>
-          <router-link to="/signin" class="btn btn-primary">Sign In</router-link>
+          <span class="fs-5 me-2 fw-bold">Are you a staff member?</span>
+          <router-link to="/signin" class="btn btn-lg btn-primary ms-2">Sign In</router-link>
         </div>
       </div>
     </nav>
@@ -91,6 +91,7 @@
 </template>
 
 <script>
+
 export default {
   data() {
     return {
@@ -103,8 +104,11 @@ export default {
       this.selectedSeverity = level;
     },
     // Book appointment function (can navigate or show confirmation)
+    // bookAppointment() {
+    //   alert(`Appointment booked with ${this.selectedSeverity} severity`);
+    // },
     bookAppointment() {
-      alert(`Appointment booked with ${this.selectedSeverity} severity`);
+    this.$router.push('/book-appointment');
     },
     onDropdownSelect() {
       // This method is optional and can be used if extra functionality is needed on dropdown selection

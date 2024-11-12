@@ -1,6 +1,7 @@
 // src/router.js
 import { createRouter, createWebHistory } from 'vue-router';
 import WelcomePage from './components/WelcomePage.vue';
+import BookAppointment from './components/BookAppointment.vue';
 import SignInPage from './components/SignInPage.vue';
 import SignUpPage from './components/SignUpPage.vue';
 import HomePage from './components/HomePage.vue';
@@ -14,6 +15,9 @@ const routes = [
     name: 'WelcomePage',
     component: WelcomePage,  // Default route is the welcome page
   },
+  { path: '/book-appointment', 
+    name: 'BookAppointment', 
+    component: BookAppointment },
   {
     path: '/signin',
     name: 'SignInPage',
