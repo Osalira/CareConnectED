@@ -9,7 +9,8 @@
       </button>
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Username</h5>
+           <!-- Display the dynamic username here -->
+           <h5 class="offcanvas-title" id="offcanvasNavbarLabel">{{ username }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -78,14 +79,19 @@ export default {
           return 'Home';
       }
     });
+    
+
+    // Dynamic username
+    const username = computed(() => authStore.user?.first_name || 'Guest'); 
+    
 
     const logout = async () => {
       await authStore.logout(router);
-      // router.push({ name: 'SignInPage' }); // Redirect to sign-in page after logout
     };
 
     return {
       pageTitle,
+      username,
       logout,
     };
   },

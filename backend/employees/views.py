@@ -40,7 +40,14 @@ def login_view(request):
 
     if user:
         login(request, user)
-        return JsonResponse({'success': True})
+        # Return success along with the user's first name and last name
+        return JsonResponse({
+            'success': True,
+            'user': {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            }
+        })
     return JsonResponse(
         {'success': False, 'message': 'Invalid credentials'}, status=401
     )

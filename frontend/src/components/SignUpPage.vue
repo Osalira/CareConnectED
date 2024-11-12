@@ -102,7 +102,7 @@ export default {
           this.success = 'Registration successful! Please log in.';
           setTimeout(() => {
             this.$router.push('/signin');
-          }, 1000);
+          }, 500);
         } else {
           this.error = data.error || 'Registration failed';
         }

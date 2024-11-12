@@ -16,30 +16,35 @@ export const useAuthStore = defineStore('auth', {
             })
         },
 
-        async login(employee_id, password, router=null) {
+        async login(employee_id, password, router = null) {
             const response = await fetch('http://localhost:8001/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCSRFToken()
                 },
-                body: JSON.stringify({employee_id, password }),
+                body: JSON.stringify({ employee_id, password }),
                 credentials: 'include'
-            })
-            const data = await response.json()
+            });
+            const data = await response.json();
+            
             if (data.success) {
-                this.isAuthenticated = true
-                this.saveState()
-                if (router){
-                    await router.push({name: "HomePage"})
+                this.user = {
+                    first_name: data.user.first_name,
+                    last_name: data.user.last_name
+                };
+                this.isAuthenticated = true;
+                this.saveState();
+                if (router) {
+                    await router.push({ name: "HomePage" });
                 }
             } else {
-                this.user = null
-                this.isAuthenticated = false
-                this.saveState()
+                this.user = null;
+                this.isAuthenticated = false;
+                this.saveState();
             }
         },
-
+        
         async logout(router=null) {
             try {
                 const response = await fetch('http://localhost:8001/api/logout', {
@@ -76,6 +81,7 @@ export const useAuthStore = defineStore('auth', {
                     const data = await response.json()
                     this.user = data
                     this.isAuthenticated = true
+                    print(data.first_name)
                 }
                 else{
                     this.user = null

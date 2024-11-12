@@ -1,5 +1,6 @@
 // src/router.js
 import { createRouter, createWebHistory } from 'vue-router';
+import WelcomePage from './components/WelcomePage.vue';
 import SignInPage from './components/SignInPage.vue';
 import SignUpPage from './components/SignUpPage.vue';
 import HomePage from './components/HomePage.vue';
@@ -7,10 +8,16 @@ import ManageAppointment from './components/ManageAppointment.vue';
 import CreateAppointment from './components/CreateAppointment.vue';
 
 const routes = [
+
+  {
+    path: '/',
+    name: 'WelcomePage',
+    component: WelcomePage,  // Default route is the welcome page
+  },
   {
     path: '/signin',
     name: 'SignInPage',
-    component: SignInPage,  // Default route is the sign-in page
+    component: SignInPage,  
   },
   {
     path: '/signup',
