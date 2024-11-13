@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/auth/jwt/', include('djoser.urls.jwt')),
     path('', include('employees.urls')),
     path('', include('appointments.urls')),
+    #//path('api/appointments/', include('appointments.urls')),  # Include appointments URLs
     #//
     path('', TemplateView.as_view(template_name="index.html"), name="index"),
 ]
