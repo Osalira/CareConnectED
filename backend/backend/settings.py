@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     
     #// django app
     'employees',
+    'appointments',
     #for a server running in a different port than the main file
     'corsheaders',
 ]

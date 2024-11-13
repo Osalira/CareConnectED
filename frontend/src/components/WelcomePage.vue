@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <!-- Main Content with Emergency Cards on the Left and Sign In on the Right -->
     <div class="container my-5">
       <div class="row">
@@ -53,17 +52,18 @@
             <select
               id="severity"
               class="form-select w-50"
-              v-model="selectedSeverity"
+              v-model="severityStore.severity"
               @change="onDropdownSelect"
             >
-              <option value="" disabled>Select severity level...</option>
+              <!-- <option value="" disabled>Select severity level...</option> -->
+              <option value="" >Select severity level...</option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>
             </select>
             <button
               class="btn btn-primary mt-3"
-              :disabled="!selectedSeverity"
+              :disabled="!severityStore.severity"
               @click="bookAppointment"
             >
               Book Appointment
@@ -73,10 +73,8 @@
 
         <!-- Right Column: Centered Sign In for Staff Members -->
         <div class="col-md-4 d-flex justify-content-center align-items-center">
-          
-          <div class="w-75"> <!-- Width constraint for a centered, smaller form -->
-            <span class="fs-4  fw-bold text-center">Sign In For Staff Members</span>
-            
+          <div class="w-75">
+            <span class="fs-4 fw-bold text-center">Sign In For Staff Members</span>
             <div class="adjusted-margin">
               <SignInPage />
             </div>
@@ -89,27 +87,40 @@
 
 <script>
 import SignInPage from './SignInPage.vue';
+import { useSeverityStore } from '../store/severity';
 
 export default {
   components: {
     SignInPage,
   },
-  data() {
-    return {
-      selectedSeverity: "", // Stores the selected severity level
-    };
+  setup() {
+    const severityStore = useSeverityStore();
+
+    function selectSeverity(level) {
+      severityStore.setSeverity(level);
+    }
+
+    function bookAppointment() {
+      // severityStore.severity && this.$router.push('/book-appointment');
+      severityStore.severity;
+      
+    }
+
+    function onDropdownSelect() {
+      console.log(`Dropdown selected: ${severityStore.severity}`);
+    }
+
+    return { severityStore, selectSeverity, bookAppointment, onDropdownSelect };
   },
   methods: {
-    // Set the selectedSeverity based on the card clicked
-    selectSeverity(level) {
-      this.selectedSeverity = level;
-    },
-    // Navigate to the Book Appointment page
+   
     bookAppointment() {
+      
       this.$router.push('/book-appointment');
+
     },
     onDropdownSelect() {
-      console.log(`Dropdown selected: ${this.selectedSeverity}`);
+      console.log(Dropdown, selected, useSeverityStore().severity);
     },
   },
 };
@@ -126,44 +137,26 @@ export default {
   transform: scale(1.05);
 }
 
-/* Center the Book Appointment Button */
 button[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Navbar styling */
-.navbar {
-  padding: 1rem;
-}
-
-/* Layout styling */
 .border-end {
   border-right: 2px solid #ddd;
   padding-right: 2rem;
 }
 
-.container-fluid {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.navbar-brand img {
-  max-height: 60px;
-}
-/* Adjusting the margin of the signInPage component */
 .adjusted-margin {
   margin-top: -80px;
 }
 
-/* The style for the H1 What's your emergency with the text below it */
 .display-3 {
-  margin-bottom: 0.5rem; /* Minimal space between heading and text */
-}
-.fs-5 {
-  display: block;
-  margin-top: 0; /* No extra space above */
+  margin-bottom: 0.5rem;
 }
 
+.fs-5 {
+  display: block;
+  margin-top: 0;
+}
 </style>
