@@ -59,7 +59,7 @@ export const useAuthStore = defineStore('auth', {
                     this.isAuthenticated = false
                     this.saveState()
                     if (router){
-                        await router.push({name: "SignInPage"})
+                        await router.push({name: "WelcomePage"})
                     }
                 }
             } catch (error) {

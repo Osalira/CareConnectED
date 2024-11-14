@@ -1,7 +1,8 @@
 <template>
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">{{ pageTitle }}</a>
+      <!-- Page title as a clickable route -->
+      <router-link :to="pageRoute" class="navbar-brand">{{ pageTitle }}</router-link>
 
       <!-- Centered search bar with autocomplete dropdown -->
       <form class="d-flex mx-auto position-relative" @submit.prevent="handleSearch" v-click-outside="closeDropdown">
@@ -22,7 +23,6 @@
           style="top: 100%;"
           aria-live="polite"
         >
-          <!-- Display patient names if there are search results -->
           <button 
             v-for="(patient, index) in searchResults" 
             :key="index" 
@@ -31,7 +31,6 @@
           >
             {{ patient.first_name }} {{ patient.last_name }}
           </button>
-          <!-- Show "No Match Found" only if there are no search results -->
           <div v-if="searchResults.length === 0" class="dropdown-item text-muted">
             No Match Found
           </div>
@@ -50,13 +49,13 @@
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <router-link class="nav-link active" to="/home-page">Home</router-link>
+              <router-link class="nav-link active" to="/home-page" @click="closeOffcanvas">Home</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link active" to="/create-appointment">Create appointment</router-link>
+              <router-link class="nav-link active" to="/create-appointment" @click="closeOffcanvas">Create appointment</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link active" to="/manage-appointment">Manage appointments</router-link>
+              <router-link class="nav-link active" to="/manage-appointment" @click="closeOffcanvas">Manage appointments</router-link>
             </li>
             <li class="nav-item">
               <a class="nav-link active" href="#" @click.prevent="logout">Logout</a>
@@ -69,7 +68,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../store/auth';
 import axios from 'axios';
@@ -81,7 +80,6 @@ export default {
     clickOutside: {
       beforeMount(el, binding) {
         el.clickOutsideEvent = (event) => {
-          // Check if the click was outside the element and its children
           if (!(el === event.target || el.contains(event.target))) {
             binding.value();
           }
@@ -113,40 +111,52 @@ export default {
       }
     });
 
+    const pageRoute = computed(() => {
+      switch (pageTitle.value) {
+        case 'Home':
+          return '/home-page';
+        case 'Create Appointment':
+          return '/create-appointment';
+        case 'Manage Appointments':
+          return '/manage-appointment';
+        case 'Edit Profile':
+          return '/edit-profile';
+        default:
+          return '/home-page';
+      }
+    });
+
     const username = computed(() => authStore.user?.first_name || 'Guest');
 
     const logout = async () => {
       await authStore.logout(router);
     };
 
-    // Search functionality
     const searchQuery = ref('');
     const searchResults = ref([]);
-    const showDropdown = ref(false); // Controls visibility of the dropdown
+    const showDropdown = ref(false);
 
-    // Debounced search function integrated directly into handleInput
     const handleInput = debounce(async () => {
       if (searchQuery.value.length > 1) {
         try {
           const response = await axios.get(`http://localhost:8001/api/appointments/search?query=${searchQuery.value}`);
           searchResults.value = response.data;
-          showDropdown.value = true; // Show dropdown when results are available
+          showDropdown.value = true;
         } catch (error) {
           console.error("Error fetching search results:", error);
-          searchResults.value = []; // Clear results on error
-          showDropdown.value = false; // Hide dropdown on error
+          searchResults.value = [];
+          showDropdown.value = false;
         }
       } else {
-        searchResults.value = [];  // Clear results when input is empty
+        searchResults.value = [];
         showDropdown.value = false;
       }
     }, 300);
 
     const selectPatient = (patient) => {
-      searchQuery.value = ''; // Clear the search input
+      searchQuery.value = '';
       searchResults.value = [];
-      showDropdown.value = false; // Hide the dropdown
-      // Navigate to SearchResults page with patient ID as a query parameter
+      showDropdown.value = false;
       router.push({ name: 'SearchResults', query: { patientId: patient.id } });
     };
 
@@ -157,11 +167,18 @@ export default {
     };
 
     const closeDropdown = () => {
-      showDropdown.value = false; // Close dropdown when clicking outside
+      showDropdown.value = false;
+    };
+
+    const closeOffcanvas = () => {
+      const offcanvasElement = document.getElementById('offcanvasNavbar');
+      const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+      offcanvas.hide();
     };
 
     return {
       pageTitle,
+      pageRoute,
       username,
       logout,
       searchQuery,
@@ -171,24 +188,135 @@ export default {
       selectPatient,
       handleSearch,
       closeDropdown,
+      closeOffcanvas,
     };
   },
 };
 </script>
 
 <style scoped>
-/* Custom styling for the dropdown */
+/* Navbar container */
+.navbar {
+  background-color: #f8f9fa;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Navbar brand (page title) styling */
+.navbar-brand {
+  color: #050e18;
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.navbar-brand:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
+/* Navbar items */
+.navbar-nav .nav-link {
+  color: #495057;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Active link styling */
+.navbar-nav .nav-link.active {
+  color: #4c5055;
+  font-weight: bold;
+}
+
+/* Navbar toggler (for mobile view) */
+.navbar-toggler {
+  border: none;
+  outline: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23495057' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(73, 80, 87, 0.7)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Offcanvas menu styling */
+.offcanvas {
+  background-color: #ffffff;
+  border-left: 1px solid #ddd;
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.offcanvas-body {
+  padding-top: 20px;
+}
+
+.offcanvas .nav-item {
+  margin-bottom: 10px;
+}
+
+/* Buttons and icons */
+.btn-close {
+  background-color: #e9ecef;
+  border: none;
+}
+
+.btn-close:hover {
+  background-color: #ced4da;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+/* Search form styling */
+.form-control {
+  border-radius: 20px;
+  border: 1px solid #ced4da;
+  padding-left: 15px;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: none;
+}
+
+/* Dropdown styling */
 .dropdown-menu.show {
   max-height: 250px;
   overflow-y: auto;
   border: 1px solid #ddd;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  top: 100%;
   z-index: 1000;
-  top: 100%; /* Ensures dropdown is below the input */
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  color: #495057;
+}
+
+.dropdown-item:hover {
+  background-color: #e9ecef;
 }
 
 .dropdown-item.text-muted {
-  color: #6c757d; /* Muted gray text for 'No Match Found' */
+  color: #6c757d;
   cursor: default;
 }
 </style>

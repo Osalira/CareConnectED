@@ -16,8 +16,9 @@ import Swal from 'sweetalert2';
           </div>
         </div>
       </nav>
+      <h2 class="text-center mb-4 mt-3">Appointment Details</h2>
       <div class="container mb-3">
-        <h2 class="text-center mb-4 mt-3">Appointment Details</h2>
+        
         <form @submit.prevent="submitAppointment">
           <!-- Personal Information -->
           <!-- Personal Information -->
