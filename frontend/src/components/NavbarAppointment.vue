@@ -1,62 +1,78 @@
 <template>
-<nav class="navbar bg-body-tertiary fixed-top">
+  <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
-      <!-- <a class="navbar-brand" href="#">Manage appointments</a> -->
-      <!-- Dynamic navbar title based on the current route -->
       <a class="navbar-brand" href="#">{{ pageTitle }}</a>
+
+      <!-- Centered search bar with autocomplete dropdown -->
+      <form class="d-flex mx-auto position-relative" @submit.prevent="handleSearch">
+        <input 
+          v-model="searchQuery" 
+          @input="handleInput" 
+          class="form-control me-2" 
+          type="search" 
+          placeholder="Search patient by name" 
+          aria-label="Search"
+          aria-expanded="true"
+        />
+        <!-- Show dropdown only if there's a search query -->
+        <div 
+          v-if="searchQuery.length > 1" 
+          class="dropdown-menu show position-absolute w-100" 
+          style="top: 100%;"
+          aria-live="polite"
+        >
+          <!-- Display patient names if there are search results -->
+          <button 
+            v-for="(patient, index) in searchResults" 
+            :key="index" 
+            class="dropdown-item" 
+            @click="selectPatient(patient)"
+          >
+            {{ patient.first_name }} {{ patient.last_name }}
+          </button>
+          <!-- Show "No Match Found" only if there are no search results -->
+          <div v-if="searchResults.length === 0" class="dropdown-item text-muted">
+            No Match Found
+          </div>
+        </div>
+      </form>
+
+      <h5 class="offcanvas-title ms-auto me-3" id="offcanvasNavbarLabel">{{ username }}</h5>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
-           <!-- Display the dynamic username here -->
-           <h5 class="offcanvas-title" id="offcanvasNavbarLabel">{{ username }}</h5>
+          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">{{ username }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
           <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
             <li class="nav-item">
-              <!-- <a class="nav-link active" aria-current="page" href="#">Create appointment</a>
-              <a class="nav-link active" aria-current="page" href="#">Manage appointments</a>
-              <a class="nav-link active" aria-current="page" href="#">Edit Profile</a> -->
               <router-link class="nav-link active" to="/home-page">Home</router-link>
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link active" to="/create-appointment">Create appointment</router-link>
+            </li>
+            <li class="nav-item">
               <router-link class="nav-link active" to="/manage-appointment">Manage appointments</router-link>
-              <!-- Logout option here -->
+            </li>
+            <li class="nav-item">
               <a class="nav-link active" href="#" @click.prevent="logout">Logout</a>
             </li>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="#">Link</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Manage appointments</a></li>
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li> -->
           </ul>
-          <form class="d-flex mt-3" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
         </div>
       </div>
     </div>
   </nav>
 </template>
 
-
 <script>
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../store/auth';
+import axios from 'axios';
+import { debounce } from 'lodash';
 
 export default {
   name: 'NavbarAppointment',
@@ -79,21 +95,73 @@ export default {
           return 'Home';
       }
     });
-    
 
-    // Dynamic username
-    const username = computed(() => authStore.user?.first_name || 'Guest'); 
-    
+    const username = computed(() => authStore.user?.first_name || 'Guest');
 
     const logout = async () => {
       await authStore.logout(router);
+    };
+
+    // Search functionality
+    const searchQuery = ref('');
+    const searchResults = ref([]);
+
+    // Debounced search function integrated directly into handleInput
+    const handleInput = debounce(async () => {
+      if (searchQuery.value.length > 1) {
+        try {
+          const response = await axios.get(`http://localhost:8001/api/appointments/search?query=${searchQuery.value}`);
+          searchResults.value = response.data;
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+          searchResults.value = []; // Clear results on error
+        }
+      } else {
+        searchResults.value = [];  // Clear results when input is empty
+      }
+    }, 300);
+
+    const selectPatient = (patient) => {
+      searchQuery.value = `${patient.first_name} ${patient.last_name}`;
+      searchResults.value = [];
+      // Navigate to SearchResults page with patient ID as a query parameter
+      router.push({ name: 'SearchResults', query: { patientId: patient.id } });
+    };
+
+
+    const handleSearch = (event) => {
+      if (searchResults.value.length) {
+        selectPatient(searchResults.value[0]);
+      }
     };
 
     return {
       pageTitle,
       username,
       logout,
+      searchQuery,
+      searchResults,
+      handleInput,
+      selectPatient,
+      handleSearch,
     };
   },
 };
 </script>
+
+<style scoped>
+/* Custom styling for the dropdown */
+.dropdown-menu.show {
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  top: 100%; /* Ensures dropdown is below the input */
+}
+
+.dropdown-item.text-muted {
+  color: #6c757d; /* Muted gray text for 'No Match Found' */
+  cursor: default;
+}
+</style>

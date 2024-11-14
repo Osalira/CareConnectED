@@ -1,5 +1,5 @@
 # appointments/views.py
-
+from django.db.models import Q  # Import Q for complex queries
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -17,6 +17,16 @@ def book_appointment(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def search_appointments(request):
+    query = request.GET.get('query', '')
+    appointments = Appointment.objects.filter(
+        Q(first_name__icontains=query) | Q(last_name__icontains=query)
+    )
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
 
 @api_view(['GET'])
 def triage_appointments(request):
@@ -53,3 +63,11 @@ def triage_appointments(request):
     ]
     
     return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def appointment_history(request):
+    patient_id = request.GET.get('patientId')
+    appointments = Appointment.objects.filter(id=patient_id)
+    serializer = AppointmentSerializer(appointments, many=True)
+    return Response(serializer.data)
+
