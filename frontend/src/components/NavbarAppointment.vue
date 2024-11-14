@@ -4,7 +4,7 @@
       <a class="navbar-brand" href="#">{{ pageTitle }}</a>
 
       <!-- Centered search bar with autocomplete dropdown -->
-      <form class="d-flex mx-auto position-relative" @submit.prevent="handleSearch">
+      <form class="d-flex mx-auto position-relative" @submit.prevent="handleSearch" v-click-outside="closeDropdown">
         <input 
           v-model="searchQuery" 
           @input="handleInput" 
@@ -14,9 +14,10 @@
           aria-label="Search"
           aria-expanded="true"
         />
+        
         <!-- Show dropdown only if there's a search query -->
         <div 
-          v-if="searchQuery.length > 1" 
+          v-if="showDropdown && searchQuery.length > 1" 
           class="dropdown-menu show position-absolute w-100" 
           style="top: 100%;"
           aria-live="polite"
@@ -37,13 +38,13 @@
         </div>
       </form>
 
-      <h5 class="offcanvas-title ms-auto me-3" id="offcanvasNavbarLabel">{{ username }}</h5>
+      <h5 class="offcanvas-title ms-auto me-3 fw-bold" id="offcanvasNavbarLabel">{{ username }}</h5>
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
         <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasNavbarLabel">{{ username }}</h5>
+          <h5 class="offcanvas-title fw-bold" id="offcanvasNavbarLabel">{{ username }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
@@ -68,7 +69,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../store/auth';
 import axios from 'axios';
@@ -76,6 +77,22 @@ import { debounce } from 'lodash';
 
 export default {
   name: 'NavbarAppointment',
+  directives: {
+    clickOutside: {
+      beforeMount(el, binding) {
+        el.clickOutsideEvent = (event) => {
+          // Check if the click was outside the element and its children
+          if (!(el === event.target || el.contains(event.target))) {
+            binding.value();
+          }
+        };
+        document.addEventListener('click', el.clickOutsideEvent);
+      },
+      unmounted(el) {
+        document.removeEventListener('click', el.clickOutsideEvent);
+      },
+    },
+  },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -105,6 +122,7 @@ export default {
     // Search functionality
     const searchQuery = ref('');
     const searchResults = ref([]);
+    const showDropdown = ref(false); // Controls visibility of the dropdown
 
     // Debounced search function integrated directly into handleInput
     const handleInput = debounce(async () => {
@@ -112,27 +130,34 @@ export default {
         try {
           const response = await axios.get(`http://localhost:8001/api/appointments/search?query=${searchQuery.value}`);
           searchResults.value = response.data;
+          showDropdown.value = true; // Show dropdown when results are available
         } catch (error) {
           console.error("Error fetching search results:", error);
           searchResults.value = []; // Clear results on error
+          showDropdown.value = false; // Hide dropdown on error
         }
       } else {
         searchResults.value = [];  // Clear results when input is empty
+        showDropdown.value = false;
       }
     }, 300);
 
     const selectPatient = (patient) => {
-      searchQuery.value = `${patient.first_name} ${patient.last_name}`;
+      searchQuery.value = ''; // Clear the search input
       searchResults.value = [];
+      showDropdown.value = false; // Hide the dropdown
       // Navigate to SearchResults page with patient ID as a query parameter
       router.push({ name: 'SearchResults', query: { patientId: patient.id } });
     };
-
 
     const handleSearch = (event) => {
       if (searchResults.value.length) {
         selectPatient(searchResults.value[0]);
       }
+    };
+
+    const closeDropdown = () => {
+      showDropdown.value = false; // Close dropdown when clicking outside
     };
 
     return {
@@ -141,9 +166,11 @@ export default {
       logout,
       searchQuery,
       searchResults,
+      showDropdown,
       handleInput,
       selectPatient,
       handleSearch,
+      closeDropdown,
     };
   },
 };

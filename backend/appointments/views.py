@@ -71,3 +71,37 @@ def appointment_history(request):
     serializer = AppointmentSerializer(appointments, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def today_appointments_count(request):
+    now = timezone.now()
+    midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    appointments_count = Appointment.objects.filter(created_at__range=(midnight, now)).count()
+    return Response({"count": appointments_count}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def current_schedule(request):
+    now = timezone.now()
+    two_hours_later = now + timedelta(hours=2)
+    upcoming_appointments = Appointment.objects.filter(created_at__range=(now, two_hours_later)).order_by('created_at')[:10]
+    response_data = [
+        {
+            "id": appt.id,
+            "patientName": f"{appt.first_name} {appt.last_name}",
+            "time": appt.created_at.strftime('%H:%M'),
+            "priority": appt.severity
+        }
+        for appt in upcoming_appointments
+    ]
+    return Response(response_data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def recent_activity(request):
+    recent_appointments = Appointment.objects.all().order_by('-created_at')[:7]
+    response_data = [
+        {
+            "id": appt.id,
+            "message": f"Appointment created for {appt.first_name} {appt.last_name} at {appt.created_at.strftime('%H:%M')}"
+        }
+        for appt in recent_appointments
+    ]
+    return Response(response_data, status=status.HTTP_200_OK)
