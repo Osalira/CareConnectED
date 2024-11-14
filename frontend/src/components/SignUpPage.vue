@@ -1,136 +1,140 @@
 <!-- SignUpPage.vue -->
 <template>
-    <div id="app">
-      <div class="loginBox">
-        <div class="inner">
-          <div class="register">
-            <div class="top">
-              <img
-                class="logo"
-                src="/src/assets/LogoCareConnectED1.png"
-              />
-              <div class="title">Create an Account</div>
-              <div class="subtitle">
-                Already have an account?
-                <router-link class="subtitle-action" to="/">
-                  Sign In
-                </router-link>
-              </div>
+  <div id="app">
+    <div class="loginBox">
+      <div class="inner">
+        <div class="register">
+          <div class="top">
+            <img class="logo" src="/src/assets/Logo1.jpeg" />
+            <div class="title">Create an Account</div>
+            <div class="subtitle">
+              Already have an account?
+              <router-link class="subtitle-action" to="/">Sign In</router-link>
             </div>
-  
-            <form @submit.prevent="signUp">
-              <div class="form">
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  v-model="firstName"
-                  class="w100"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  v-model="lastName"
-                  class="w100"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Employee ID"
-                  v-model="employeeId"
-                  class="w100"
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  v-model="password"
-                  class="w100"
-                  required
-                />
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  v-model="confirmPassword"
-                  class="w100"
-                  required
-                />
-              </div>
-
-              <button type="submit" class="action" :disabled="!registerValid">
-                Create Account
-              </button>
-            </form>
-
           </div>
+
+          <form @submit.prevent="signUp">
+            <div class="form">
+              <input
+                type="text"
+                placeholder="First Name"
+                v-model="firstName"
+                class="w100"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                v-model="lastName"
+                class="w100"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Employee ID"
+                v-model="employeeId"
+                class="w100"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model="password"
+                class="w100"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                v-model="confirmPassword"
+                class="w100"
+                required
+              />
+            </div>
+
+            <button type="submit" class="action" :disabled="!registerValid">
+              Create Account
+            </button>
+          </form>
         </div>
       </div>
     </div>
+  </div>
 </template>
-  
-<script>
-import { getCSRFToken } from '../store/auth'
-    export default {
-      data() {
-        return {
-          firstName: '',
-          lastName: '',
-          employeeId: '',
-          password: '',
-          confirmPassword: '', // New confirm password field
-          error: '',
-          success: ''
-        }
-      },
-      computed: {
-        registerValid() {
-          return (
-            this.firstName &&
-            this.lastName &&
-            this.employeeId &&
-            this.password &&
-            this.confirmPassword &&
-            this.password === this.confirmPassword // Ensure passwords match
-          );
-        }
-      },
-      methods: {
-        async signUp() {
-          if (this.password !== this.confirmPassword) {
-            this.error = "Passwords do not match!";
-            return;
-          }
-          try {
-            const response = await fetch('http://localhost:8001/api/register', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-              },
-              body: JSON.stringify({
-                first_name: this.firstName,
-                last_name: this.lastName,
-                employee_id: this.employeeId,
-                password: this.password
-              }),
-              credentials: 'include'
-            });
-            const data = await response.json();
-            if (response.ok) {
-              this.success = 'Registration successful! Please log in.';
-              setTimeout(() => {
-                this.$router.push('/');
-              }, 200);
-            } else {
-              this.error = data.error || 'Registration failed';
-            }
-          } catch (err) {
-            this.error = 'An error occurred during registration: ' + err;
-          }
-        }
-      }
-    }
 
+<script>
+import Swal from 'sweetalert2';
+import { getCSRFToken } from '../store/auth'
+
+export default {
+  data() {
+    return {
+      firstName: '',
+      lastName: '',
+      employeeId: '',
+      password: '',
+      confirmPassword: '',
+      error: '',
+    };
+  },
+  computed: {
+    registerValid() {
+      return (
+        this.firstName &&
+        this.lastName &&
+        this.employeeId &&
+        this.password &&
+        this.confirmPassword &&
+        this.password === this.confirmPassword
+      );
+    },
+  },
+  methods: {
+    async signUp() {
+      if (this.password !== this.confirmPassword) {
+        this.error = 'Passwords do not match!';
+        setTimeout(() => (this.error = ''), 3000);
+        return;
+      }
+      try {
+        const response = await fetch('http://localhost:8001/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+          },
+          body: JSON.stringify({
+            first_name: this.firstName,
+            last_name: this.lastName,
+            employee_id: this.employeeId,
+            password: this.password,
+          }),
+          credentials: 'include',
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // SweetAlert success popup
+          Swal.fire({
+            title: 'Account Created Successfully!',
+            text: 'Please sign in with your new credentials.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            background: '#f0f8ff',
+            confirmButtonColor: '#4CAF50',
+            iconColor: '#4CAF50',
+          }).then(() => {
+            this.$router.push('/');
+          });
+        } else {
+          this.error = data.error || 'Registration failed';
+        }
+      } catch (err) {
+        this.error = 'An error occurred during registration: ' + err;
+        setTimeout(() => (this.error = ''), 3000);
+      }
+    },
+  },
+};
 </script>
 
   
@@ -176,7 +180,7 @@ import { getCSRFToken } from '../store/auth'
   
 
 .logo {
-  width: 200px;
+  width: 290px;
   margin-bottom: 0; 
 }
   
@@ -187,7 +191,7 @@ import { getCSRFToken } from '../store/auth'
     width: 100%;
     border: none;
     cursor: pointer;
-    background: green;
+    background: rgb(18, 171, 99);
     margin-top: 20px;
     color: #fff;
     font-size: 1.2rem;
