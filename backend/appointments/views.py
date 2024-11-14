@@ -43,6 +43,10 @@ def triage_appointments(request):
         {
             "name": f"{appt.first_name} {appt.last_name}",
             "severity": appt.severity,
+            "address" : appt.address,
+            "phone_number": appt.phone_number, 
+            "insurance": appt.insurance_number,
+            "description": appt.description,
             "created_at": appt.created_at.strftime('%Y-%m-%d %H:%M')
         }
         for appt in triage_order
