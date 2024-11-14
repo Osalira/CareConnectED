@@ -7,7 +7,7 @@
             <div class="top">
               <img
                 class="logo"
-                src="https://www.mistered.de/MisterEDk.png"
+                src="/src/assets/LogoCareConnectED1.png"
               />
               <div class="title">Create an Account</div>
               <div class="subtitle">
@@ -48,12 +48,20 @@
                   class="w100"
                   required
                 />
+                <input
+                  type="password"
+                  placeholder="Confirm Password"
+                  v-model="confirmPassword"
+                  class="w100"
+                  required
+                />
               </div>
-  
+
               <button type="submit" class="action" :disabled="!registerValid">
                 Create Account
               </button>
             </form>
+
           </div>
         </div>
       </div>
@@ -62,56 +70,67 @@
   
 <script>
 import { getCSRFToken } from '../store/auth'
-
-export default {
-  data() {
-    return {
-      firstName: '',
-      lastName: '',
-      employeeId: '',
-      password: '',
-      error: '',
-      success: ''
-    }
-  },
-  computed: {
-    registerValid() {
-      return this.firstName && this.lastName && this.employeeId && this.password;
-    }
-  },
-  methods: {
-    async signUp() {
-      try {
-        const response = await fetch('http://localhost:8001/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-          },
-          body: JSON.stringify({
-            first_name: this.firstName,  // Add first_name
-            last_name: this.lastName, // Add last_name
-            employee_id: this.employeeId,
-            password: this.password
-                 
-          }),
-          credentials: 'include'
-        });
-        const data = await response.json();
-        if (response.ok) {
-          this.success = 'Registration successful! Please log in.';
-          setTimeout(() => {
-            this.$router.push('/signin');
-          }, 200);
-        } else {
-          this.error = data.error || 'Registration failed';
+    export default {
+      data() {
+        return {
+          firstName: '',
+          lastName: '',
+          employeeId: '',
+          password: '',
+          confirmPassword: '', // New confirm password field
+          error: '',
+          success: ''
         }
-      } catch (err) {
-        this.error = 'An error occurred during registration: ' + err;
+      },
+      computed: {
+        registerValid() {
+          return (
+            this.firstName &&
+            this.lastName &&
+            this.employeeId &&
+            this.password &&
+            this.confirmPassword &&
+            this.password === this.confirmPassword // Ensure passwords match
+          );
+        }
+      },
+      methods: {
+        async signUp() {
+          if (this.password !== this.confirmPassword) {
+            this.error = "Passwords do not match!";
+            return;
+          }
+          try {
+            const response = await fetch('http://localhost:8001/api/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+              },
+              body: JSON.stringify({
+                first_name: this.firstName,
+                last_name: this.lastName,
+                employee_id: this.employeeId,
+                password: this.password
+              }),
+              credentials: 'include'
+            });
+            const data = await response.json();
+            if (response.ok) {
+              this.success = 'Registration successful! Please log in.';
+              setTimeout(() => {
+                this.$router.push('/');
+              }, 200);
+            } else {
+              this.error = data.error || 'Registration failed';
+            }
+          } catch (err) {
+            this.error = 'An error occurred during registration: ' + err;
+          }
+        }
       }
     }
-  }
-}
+
 </script>
 
   
@@ -123,6 +142,7 @@ export default {
     align-items: center;
     justify-content: center;
     margin: 0;
+    margin-bottom: 20px;
   }
 
   @mixin box {
@@ -154,10 +174,11 @@ export default {
     width: 100%;
   }
   
-  .logo {
-    width: 300px;
-    margin-bottom: 10px;
-  }
+
+.logo {
+  width: 200px;
+  margin-bottom: 0; 
+}
   
   .action {
     height: 40px;
@@ -178,23 +199,25 @@ export default {
     cursor: not-allowed;
   }
   
+
   .top {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    margin-bottom: 10px;
-  }
-  
-  .title {
-    width: 100%;
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-    text-align: center;
-  }
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 0; /* Remove bottom margin */
+  padding-top: 10px; /* Reduce gap between logo and top of sign-in box */
+}
+.title {
+  width: 100%;
+  font-size: 1.8rem;
+  margin: 0; /* Remove all margins to eliminate any gap */
+  text-align: center;
+  padding-top: 10px; /* Add a little padding for spacing if needed */
+}
   
   .subtitle {
     .subtitle-action {
-      color: green;
+      color: rgb(55, 45, 196);
       font-weight: bold;
       cursor: pointer;
     }
@@ -252,6 +275,7 @@ export default {
     .loginBox {
       padding: 25px 25px;
       max-width: 100vw;
+      max-height: 600px;
     }
   }
 </style>

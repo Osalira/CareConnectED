@@ -1,95 +1,95 @@
 <!-- SignInPage.vue -->
 <template>
-    <div id="app">
-      <div class="loginBox">
-        <div class="inner">
-          <div class="signIn">
-            <div class="top">
-              <img
-                class="logo"
-                src="https://www.mistered.de/MisterEDk.png"
-              />
-              <div class="title">Sign In</div>
-              <div class="subtitle">
-                Don't have an account?
-                <router-link class="subtitle-action" to="/signup">
-                  Create Account
-                </router-link>
-              </div>
+  <div id="app">
+    <div class="loginBox">
+      <div class="inner">
+        <div class="signIn">
+          <div class="top">
+            <img
+              class="logo"
+              src="/src/assets/LogoCareConnectED1.png"
+            />
+            <div class="title">Sign In</div>
+            <div class="subtitle">
+              Don't have an account?
+              <router-link class="subtitle-action" to="/signup">
+                Create Account
+              </router-link>
             </div>
-            <form @submit.prevent="signIn">
-              <div class="form">
-                <input
-                  required
-                  aria-required="true"
-                  aria-label="Employee ID"
-                  type="text"
-                  class="w100"
-                  placeholder="Employee ID"
-                  v-model="employeeId"
-                />
-                <input
-                  required
-                  aria-required="true"
-                  type="password"
-                  class="w100"
-                  placeholder="Password"
-                  v-model="password"
-                />
-              </div>
-              <button type="submit" class="action" :disabled="!loginValid">Sign In</button>
-            </form>
-            <p v-if="error" class="error">{{ error }}</p>
-
           </div>
+          <form @submit.prevent="signIn">
+            <div class="form">
+              <input
+                required
+                aria-required="true"
+                aria-label="Employee ID"
+                type="text"
+                class="w100"
+                placeholder="Employee ID"
+                v-model="employeeId"
+              />
+              <input
+                required
+                aria-required="true"
+                type="password"
+                class="w100"
+                placeholder="Password"
+                v-model="password"
+              />
+            </div>
+            <button type="submit" class="action" :disabled="!loginValid">Sign In</button>
+          </form>
+          <p v-if="error" class="error">{{ error }}</p>
+
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-        import { useAuthStore } from '../store/auth'
+  </div>
+</template>
 
-        export default {
-        setup() {
-            const authStore = useAuthStore()
-            return {
-            authStore
-            }
-        },
-        data() {
-            return {
-            employeeId: "", // Renamed for consistency
-            password: "",
-            error: ""
-            }
-        },
-        computed: {
-            loginValid() {
-            return this.employeeId && this.password;
-            }
-        },
-        methods: {
-            async signIn() {
-            try {
-                await this.authStore.login(this.employeeId, this.password, this.$router)
-                if (!this.authStore.isAuthenticated) {
-                this.error = 'Login failed. Please check your credentials.'
-                }
-            } catch (err) {
-                this.error = 'An error occurred during login.'
-            }
-            },
-            resetError() {
-            this.error = ""
-            }
-        }
-        }
-  </script>
+<script>
+      import { useAuthStore } from '../store/auth'
 
- 
-  
-  <style lang="scss" scoped>
+      export default {
+      setup() {
+          const authStore = useAuthStore()
+          return {
+          authStore
+          }
+      },
+      data() {
+          return {
+          employeeId: "", // Renamed for consistency
+          password: "",
+          error: ""
+          }
+      },
+      computed: {
+          loginValid() {
+          return this.employeeId && this.password;
+          }
+      },
+      methods: {
+          async signIn() {
+          try {
+              await this.authStore.login(this.employeeId, this.password, this.$router)
+              if (!this.authStore.isAuthenticated) {
+              this.error = 'Login failed. Please check your credentials.'
+              }
+          } catch (err) {
+              this.error = 'An error occurred during login.'
+          }
+          },
+          resetError() {
+          this.error = ""
+          }
+      }
+      }
+</script>
+
+
+
+<style lang="scss" scoped>
 
   // Style for the error message
   .error {
@@ -142,7 +142,7 @@
 
   
   .logo {
-    width: 300px;
+    width: 290px;
     margin-bottom: 10px;
   }
   
@@ -177,11 +177,12 @@
     font-size: 1.8rem;
     margin-bottom: 10px;
     text-align: center;
+    margin-top: 0;
   }
   
   .subtitle {
     .subtitle-action {
-      color: green;
+      color: rgb(83, 62, 205);
       font-weight: bold;
       cursor: pointer;
     }
@@ -244,4 +245,3 @@
     }
   }
   </style>
-  

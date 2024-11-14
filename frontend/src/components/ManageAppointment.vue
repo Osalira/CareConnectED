@@ -5,7 +5,7 @@
       <div class="row">
         <!-- Left Section: Triage Result -->
         <div class="col-4 border-end">
-          <h3 class="text-center mb-3 fw-bold">Triage Results</h3>
+          <h3 class="text-center mb-3 fw-bold mt-1">Triage Results</h3>
           <ul class="list-group">
             <li class="list-group-item" v-for="(patient, index) in triageResults" :key="index">
               {{ patient.name }} - {{ patient.severity }} Priority
@@ -14,7 +14,7 @@
         </div>
         <!-- Right Section: Schedule with Dynamic Hours and Drag-and-Drop -->
         <div class="col-8">
-          <h3 class="text-center mb-3 fw-bold">Schedule</h3>
+          <h3 class="text-center mb-3 fw-bold mt-1">Schedule</h3>
           <div class="schedule">
             <div v-for="hour in hours" :key="hour" class="time-slot d-flex align-items-center border-bottom"
               @dragover.prevent="dragOver" @drop="drop($event, hour)">
