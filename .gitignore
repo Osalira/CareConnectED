@@ -1,0 +1,31 @@
+node_modules
+# macOS system files
+.DS_Store
+
+# Node.js modules (frontend)
+frontend/node_modules
+
+# Frontend distribution folder
+frontend/dist
+
+# Local environment files
+frontend/.env.local
+frontend/.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ignore virtual environment in backend
+backend/venv/
