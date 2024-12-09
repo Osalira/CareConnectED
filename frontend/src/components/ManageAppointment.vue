@@ -9,7 +9,7 @@
           <div class="drop-zone" @dragover.prevent="dragOver" @drop="drop($event, 'triage')">
             <ul class="list-group">
               <li
-                class="list-group-item"
+                class="list-group-item fw-bold"
                 v-for="(appointment, index) in triageResults"
                 :key="index"
                 draggable="true"
@@ -214,7 +214,10 @@ h3 {
 .list-group-item {
   padding: 5px 10px;
   border-radius: 4px;
-  background-color: #e9ecef;
+  background-color: #948aee;
+  /* color: white; */
+  /* color: black; */
+  font: bold;
   display: flex;
   cursor: move;
   margin: 5px;
@@ -225,13 +228,14 @@ h3 {
 
 .drop-zone {
   min-height: 100px; /* Ensure space for dropping */
+  height: 78vh;
   /*border: 2px dashed #007bff;  Visualize drop area */
   padding: 10px;
-  background-color: #f8f9fa; /* Optional: Light background for drop zones */
+  background-color: white; /* Optional: Light background for drop zones */
 }
 
 .drop-zone:hover {
-  background-color: #e9ecef; /* Highlight on hover */
+   background-color: #eaedeb; /* Highlight on hover */
 }
 
 .schedule-item {

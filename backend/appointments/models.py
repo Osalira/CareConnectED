@@ -26,6 +26,7 @@ class Appointment(models.Model):
     checked_in_time = models.DateTimeField(blank=True, null=True)  # Time when patient checked in
     checked_out_time = models.DateTimeField(blank=True, null=True)  # Time when patient checked out
     doctor_notes = models.TextField(blank=True, null=True)
+    doctor_name = models.CharField(max_length=255, blank=True, null=True)  # Add doctor name
     scheduled_time = models.DateTimeField(default=now)
     created_at = models.DateTimeField(auto_now_add=True)
 

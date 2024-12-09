@@ -7,14 +7,14 @@ from .models import Appointment, Patient
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Patient
-        fields = ['first_name', 'last_name', 'address', 'phone_number', 'insurance_number']
+        fields = ['id', 'first_name', 'last_name', 'address', 'phone_number', 'insurance_number']
 
 class AppointmentSerializer(serializers.ModelSerializer):
     patient = PatientSerializer()  # Nested serializer for patient
 
     class Meta:
         model = Appointment
-        fields = ['id', 'patient', 'description', 'severity', 'scheduled_time', 'doctor_notes']
+        fields = ['id', 'patient', 'description', 'severity', 'scheduled_time', 'doctor_notes','doctor_name', 'checked_in_time', 'checked_out_time', 'state']
 
     def create(self, validated_data):
         # Extract patient data and create or get the patient instance

@@ -20,6 +20,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.13",
     "@vitejs/plugin-vue": "^5.1.4",
     "vite": "^5.4.11"
   }

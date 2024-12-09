@@ -5,9 +5,11 @@ import BookAppointment from './components/BookAppointment.vue';
 import SignInPage from './components/SignInPage.vue';
 import SignUpPage from './components/SignUpPage.vue';
 import HomePage from './components/HomePage.vue';
-import SearchResults from './components/SearchResults.vue';
 import ManageAppointment from './components/ManageAppointment.vue';
 import CreateAppointment from './components/CreateAppointment.vue';
+import UpdateAppointment from './components/UpdateAppointment.vue';
+import RecordsHistory from './components/RecordsHistory.vue';
+import PatientDetails from './components/PatientDetails.vue';
 
 const routes = [
 
@@ -18,7 +20,9 @@ const routes = [
   },
   { path: '/book-appointment', 
     name: 'BookAppointment', 
-    component: BookAppointment },
+    component: BookAppointment 
+  },
+ 
   {
     path: '/signin',
     name: 'SignInPage',
@@ -29,15 +33,23 @@ const routes = [
     name: 'SignUpPage', // Add route for SignUpPage
     component: SignUpPage,
   },
-  {
-    path:'/search-results',
-    name: 'SearchResults',
-    component: SearchResults,
-  },
   { path: '/home-page', name: 'HomePage', component: HomePage },
   { path: '/manage-appointment', name: 'ManageAppointment', component: ManageAppointment },
   { path: '/create-appointment', name: 'CreateAppointment', component: CreateAppointment },
-  
+  { path: '/update-appointment', 
+    name: 'UpdateAppointment', 
+    component: UpdateAppointment 
+  },
+  {
+    path: '/records-history',
+    name: 'RecordsHistory',
+    component: RecordsHistory,
+  },
+  { 
+    path: '/patients/:patientId/details', 
+    name: 'PatientDetails', 
+    component: PatientDetails 
+  },
   
 ];
 

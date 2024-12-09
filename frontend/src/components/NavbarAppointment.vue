@@ -2,10 +2,16 @@
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
       <!-- Page title as a clickable route -->
-      <router-link :to="pageRoute" class="navbar-brand">{{ pageTitle }}</router-link>
+      <!-- <router-link :to="pageRoute" class="navbar-brand">{{ pageTitle }}</router-link> -->
+      <router-link :to="pageRoute" class="navbar-brand">CareConnectED</router-link>
 
-      <!-- Centered search bar with autocomplete dropdown -->
-      <form class="d-flex mx-auto position-relative" @submit.prevent="handleSearch" v-click-outside="closeDropdown">
+      <!-- Centered search bar (only for HomePage) -->
+      <form 
+        v-if="isHomePage" 
+        class="d-flex mx-auto position-relative" 
+        @submit.prevent="handleSearch" 
+        v-click-outside="closeDropdown"
+      >
         <input 
           v-model="searchQuery" 
           @input="handleInput" 
@@ -15,10 +21,10 @@
           aria-label="Search"
           aria-expanded="true"
         />
-        
-        <!-- Show dropdown only if there's a search query -->
+
+        <!-- Dropdown for autocomplete -->
         <div 
-          v-if="showDropdown && searchQuery.length > 1" 
+          v-if="showDropdown && searchQuery.length > 0" 
           class="dropdown-menu show position-absolute w-100" 
           style="top: 100%;"
           aria-live="polite"
@@ -36,8 +42,18 @@
           </div>
         </div>
       </form>
-
-      <h5 class="offcanvas-title ms-auto me-3 fw-bold" id="offcanvasNavbarLabel">{{ username }}</h5>
+      
+      <!-- <h5 class="offcanvas-title ms-auto me-3 fw-bold" id="offcanvasNavbarLabel">{{ username }}</h5> -->
+       <!-- Navbar links -->
+       <ul class="navbar-nav flex-row ms-auto d-none d-md-flex me-2">
+        <li class="nav-item">
+          <router-link class="nav-link active" to="/records-history">Patient Records</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link active" to="/update-appointment">Update Appointment</router-link>
+        </li>
+      </ul>
+      
       <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -58,7 +74,14 @@
               <router-link class="nav-link active" to="/manage-appointment" @click="closeOffcanvas">Manage appointments</router-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="#" @click.prevent="logout">Logout</a>
+              <router-link class="nav-link active" to="/update-appointment" @click="closeOffcanvas">Update appointments Info</router-link>
+            </li>
+            <li class="nav-item">
+                <router-link class="nav-link active" to="/records-history">Records History</router-link>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link active" to="/" @click.prevent="logout">Logout</a>
             </li>
           </ul>
         </div>
@@ -67,6 +90,7 @@
   </nav>
 </template>
 
+
 <script>
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -74,23 +98,9 @@ import { useAuthStore } from '../store/auth';
 import axios from 'axios';
 import { debounce } from 'lodash';
 
+
 export default {
-  name: 'NavbarAppointment',
-  directives: {
-    clickOutside: {
-      beforeMount(el, binding) {
-        el.clickOutsideEvent = (event) => {
-          if (!(el === event.target || el.contains(event.target))) {
-            binding.value();
-          }
-        };
-        document.addEventListener('click', el.clickOutsideEvent);
-      },
-      unmounted(el) {
-        document.removeEventListener('click', el.clickOutsideEvent);
-      },
-    },
-  },
+  name: 'NavbarHomePage',
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -99,35 +109,53 @@ export default {
     const pageTitle = computed(() => {
       switch (route.name) {
         case 'HomePage':
-          return 'Home';
+          // return 'Home';
+          return 'CareConnectED';
         case 'CreateAppointment':
-          return 'Create Appointment';
+          // return 'Create Appointment';
+          return 'CareConnectED';
         case 'ManageAppointment':
-          return 'Manage Appointments';
+          // return 'Manage Appointments';
+          return 'CareConnectED';
         case 'EditProfile':
-          return 'Edit Profile';
+          // return 'Edit Profile';
+          return 'CareConnectED';
+        case 'UpdateAppointment':
+          // return 'Update Appointment';
+          return 'CareConnectED';
+        case 'RecordsHistory':
+          // return 'Patient Records';
+          return 'CareConnectED';
         default:
           return 'Home';
+      }
+    });
+    const pageRoute = computed(() => {
+      switch (route.name) {
+        case 'CareConnectED':
+          return '/home-page';
+        case 'HomePage':
+          return '/home-page';
+        case 'CreateAppointment':
+          // return '/create-appointment';
+          return '/home-page';
+        case 'ManageAppointment':
+          // return '/manage-appointment';
+          return '/home-page';
+        case 'UpdateAppointment':
+          // return '/update-appointment';
+          return '/home-page';
+        case 'RecordsHistory':
+          // return '/records-history';
+          return '/home-page';
+        default:
+          return '/home-page'; // Fallback route
       }
     });
 
-    const pageRoute = computed(() => {
-      switch (pageTitle.value) {
-        case 'Home':
-          return '/home-page';
-        case 'Create Appointment':
-          return '/create-appointment';
-        case 'Manage Appointments':
-          return '/manage-appointment';
-        case 'Edit Profile':
-          return '/edit-profile';
-        default:
-          return '/home-page';
-      }
-    });
+    const isHomePage = computed(() => route.name === 'HomePage');
 
     const username = computed(() => authStore.user?.first_name || 'Guest');
-
     const logout = async () => {
       await authStore.logout(router);
     };
@@ -136,14 +164,17 @@ export default {
     const searchResults = ref([]);
     const showDropdown = ref(false);
 
+    // Inside your setup function
     const handleInput = debounce(async () => {
-      if (searchQuery.value.length > 1) {
+      if (searchQuery.value.length > 0) {
         try {
-          const response = await axios.get(`http://localhost:8001/api/appointments/search?query=${searchQuery.value}`);
+          const response = await axios.get(`http://localhost:8001/api/patient_records_nav_search/`, {
+            params: { query: searchQuery.value }
+          });
           searchResults.value = response.data;
           showDropdown.value = true;
         } catch (error) {
-          console.error("Error fetching search results:", error);
+          console.error('Error fetching search results:', error);
           searchResults.value = [];
           showDropdown.value = false;
         }
@@ -153,12 +184,14 @@ export default {
       }
     }, 300);
 
+  
     const selectPatient = (patient) => {
       searchQuery.value = '';
       searchResults.value = [];
       showDropdown.value = false;
-      router.push({ name: 'SearchResults', query: { patientId: patient.id } });
+      router.push({ name: 'PatientDetails', params: { patientId: patient.id } }); 
     };
+
 
     const handleSearch = (event) => {
       if (searchResults.value.length) {
@@ -178,7 +211,7 @@ export default {
 
     return {
       pageTitle,
-      pageRoute,
+      isHomePage,
       username,
       logout,
       searchQuery,
@@ -189,13 +222,41 @@ export default {
       handleSearch,
       closeDropdown,
       closeOffcanvas,
+      pageRoute
     };
   },
 };
+
 </script>
 
 <style scoped>
 /* Navbar container */
+.navbar-nav.flex-row {
+  gap: 20px; /* Add spacing between links */
+  align-items: center; /* Vertically center links */
+}
+/* General link styling */
+.nav-link {
+  color: #495057; /* Default link color */
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.3s ease, background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Hover effect for links */
+.nav-link:hover {
+  color: #007bff; /* Change text color on hover */
+  background-color: rgba(0, 123, 255, 0.1); /* Optional background highlight */
+  border-radius: 4px; /* Add rounded corners for visual effect */
+}
+/* Only links on the navbar */
+.navbar .nav-link:hover {
+  color: #007bff;
+  background-color: rgba(0, 123, 255, 0.1);
+  border-radius: 4px;
+  
+}
+
 .navbar {
   background-color: #f8f9fa;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

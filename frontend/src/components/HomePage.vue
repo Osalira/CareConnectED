@@ -4,10 +4,8 @@
 
     <div class="container mt-5">
       <div class="row">
-        
         <!-- Left Column: Overview and Recent Activity -->
         <div class="col-md-6">
-          
           <!-- Today's Overview -->
           <div class="overview card mb-3 p-4 shadow-sm">
             <h3 class="text-info mb-3">Today's Overview</h3>
@@ -15,7 +13,6 @@
               <li><strong>Appointments:</strong> {{ todayAppointmentsCount }}</li>
               <li><strong>Pending Triage:</strong> {{ pendingTriageCount }}</li>
             </ul>
-            <!-- Create Appointment Button -->
             <router-link to="/create-appointment" class="btn btn-primary mt-4">Create Appointment</router-link>
           </div>
 
@@ -23,24 +20,33 @@
           <div class="recent-activity card mt-4 p-4 shadow-sm">
             <h3 class="text-secondary mb-3">Recent Activity</h3>
             <ul class="list-unstyled">
-              <li v-for="activity in recentActivity" :key="activity.id" class="activity-item py-2 border-bottom">
-                {{ activity.message }}
+              <li
+                v-for="activity in recentActivity"
+                :key="activity.id"
+                class="activity-item py-2 border-bottom"
+              >
+                {{ activity.message }} 
               </li>
             </ul>
           </div>
-          
         </div>
 
         <!-- Right Column: Current Schedule -->
         <div class="col-md-6">
           <div class="schedule card p-4 shadow-sm">
             <h3 class="text-success mb-3">Patients in the ER</h3>
-            <div v-for="appointment in currentSchedule" :key="appointment.id" class="appointment-item py-3 border-bottom">
-              <p><strong>{{ appointment.time }}</strong> - {{ appointment.patientName }} <span class="badge bg-warning text-dark">{{ appointment.priority }}</span></p>
+            <div
+              v-for="appointment in currentSchedule"
+              :key="appointment.id"
+              class="appointment-item py-3 border-bottom"
+            >
+              <p>
+                <strong>{{ appointment.time }}</strong> - {{ appointment.patientName }}
+                <span class="badge bg-warning text-dark">{{ appointment.priority }}</span>
+              </p>
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   </div>
@@ -60,42 +66,50 @@ export default {
       todayAppointmentsCount: 0,
       pendingTriageCount: 0,
       recentActivity: [],
-      currentSchedule: []
+      currentSchedule: [],
     };
   },
-  mounted() {
-    this.fetchTodayAppointmentsCount();
-    this.fetchCurrentSchedule();
-    this.fetchRecentActivity();
-  },
   methods: {
-    async fetchTodayAppointmentsCount() {
-      try {
-        const response = await axios.get('http://localhost:8001/api/appointments/today_count/');
-        this.todayAppointmentsCount = response.data.count;
-      } catch (error) {
-        console.error("Error fetching today's appointments count:", error);
-      }
-    },
-    async fetchCurrentSchedule() {
-      try {
-        const response = await axios.get('http://localhost:8001/api/appointments/current_schedule/');
-        this.currentSchedule = response.data;
-      } catch (error) {
-        console.error("Error fetching current schedule:", error);
-      }
-    },
-    async fetchRecentActivity() {
-      try {
-        const response = await axios.get('http://localhost:8001/api/appointments/recent_activity/');
-        this.recentActivity = response.data;
-      } catch (error) {
-        console.error("Error fetching recent activity:", error);
-      }
+  async fetchTodayOverview() {
+    try {
+      const response = await axios.get('/api/appointments/today-overview');
+      const data = response.data;
+      this.todayAppointmentsCount = data.appointments || 0;
+      this.pendingTriageCount = data.pending_triage || 0;
+    } catch (error) {
+      console.error('Error fetching Today\'s Overview:', error);
     }
-  }
+  },
+  async fetchRecentActivity() {
+    try {
+      const response = await axios.get('/api/appointments/recent-activity');
+      const data = response.data;
+      this.recentActivity = data.recent_activity || [];
+    } catch (error) {
+      console.error('Error fetching Recent Activity:', error);
+    }
+  },
+  async fetchCurrentSchedule() {
+    try {
+      const response = await axios.get('/api/appointments/current-schedule');
+      const data = response.data;
+      this.currentSchedule = data.scheduled_patients || [];
+    } catch (error) {
+      console.error('Error fetching Current Schedule:', error);
+    }
+  },
+},
+mounted() {
+  this.fetchTodayOverview();
+  this.fetchRecentActivity();
+  this.fetchCurrentSchedule();
+}
+
 };
 </script>
+
+
+
 
 <style scoped>
 .home-page {
@@ -119,11 +133,14 @@ h3 {
   color: #06080e;
 }
 
-.overview, .recent-activity, .schedule {
+.overview,
+.recent-activity,
+.schedule {
   padding: 20px;
 }
 
-.appointment-item, .activity-item {
+.appointment-item,
+.activity-item {
   font-size: 0.9em;
 }
 

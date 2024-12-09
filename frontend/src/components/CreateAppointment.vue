@@ -97,14 +97,16 @@ export default {
     async submitAppointment() {
       try {
         const response = await axios.post('http://localhost:8001/api/appointments/', {
-          first_name: this.firstName,
-          last_name: this.lastName,
-          address: this.address,
-          phone_number: this.phoneNumber,
-          insurance_number: this.insuranceNumber,
-          description: this.description,
-          severity: this.severity, // Pass selected severity
-        });
+              patient: {
+                first_name: this.firstName,
+                last_name: this.lastName,
+                address: this.address,
+                phone_number: this.phoneNumber,
+                insurance_number: this.insuranceNumber,
+              },
+              description: this.description,
+              severity: this.severity.toLowerCase(),
+            });
 
         Swal.fire({
           title: `Appointment Booked!`,
