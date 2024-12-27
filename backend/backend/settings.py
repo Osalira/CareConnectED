@@ -96,8 +96,10 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'backend',  # Add this for Docker
+    'https://backendcareconnected.onrender.com',
+    'https://localhost-i0ln.onrender.com',
     'backendcareconnected.onrender.com',
-    'frontendcareconnected.onrender.com',
+    'localhost-i0ln.onrender.com',
 ]
 
 
