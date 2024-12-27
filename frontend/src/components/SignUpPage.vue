@@ -5,7 +5,7 @@
       <div class="inner">
         <div class="register">
           <div class="top">
-            <img class="logo" src="../assets/Logo1.jpeg" />
+            <img class="logo" src="/assets/logo1.jpeg" />
             <div class="title">Create an Account</div>
             <div class="subtitle">
               Already have an account?

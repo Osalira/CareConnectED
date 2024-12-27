@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
         <div class="container-fluid">
           <!-- Logo Section -->
           <a class="navbar-brand" href="#">
-            <img src="../assets/Logo1.jpeg" alt="Logo" width="120" />
+            <img src="/assets/logo1.jpeg" alt="Logo" width="120" />
           </a>
   
           <!-- Right Side: Changed Mind question and Log out Button -->

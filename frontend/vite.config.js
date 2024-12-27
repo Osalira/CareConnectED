@@ -10,13 +10,19 @@ export default defineConfig({
       },
     },
   },
+  resolve: {
+    alias: {
+      '@': 'src', // Maps `@` to the `src` directory
+    },
+  },
   server: {
     proxy: {
       '/api': {
-        target: 'http://backend:8001', // Use the service name "backend"
+        target: 'https://backendcareconnected.onrender.com', // Use the service name "backend"
         changeOrigin: true,
       },
     },
   },
   plugins: [vue()],
 })
+

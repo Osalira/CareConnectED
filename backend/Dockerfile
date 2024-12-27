@@ -2,7 +2,7 @@
 
 # FROM python:3.10-slim
 ARG PYTHON_VERSION=3.12.5
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -28,9 +28,12 @@ RUN adduser \
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
+# for dev
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
+
+
 
 # Switch to the non-privileged user to run the application.
 USER appuser
@@ -46,9 +49,14 @@ EXPOSE 8001
 
 # Copy project files
 COPY . /app/
+# COPY .env /app/.env
 
 # Expose port
 # EXPOSE 8001
 
 # Default command
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
+
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8001"]
+
+# for dev
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]

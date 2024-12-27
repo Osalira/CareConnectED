@@ -16,6 +16,7 @@ FROM node:18-bullseye
 
 # Set the working directory
 WORKDIR /app
+# WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
@@ -27,7 +28,12 @@ RUN npm install
 COPY . .
 
 # Expose the Vite development server port
-EXPOSE 5173
+# for dev
+# EXPOSE 5173
 
-# Run the Vite dev server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# # Run the Vite dev server
+# for dev
+# CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+RUN npm run build
+
+CMD ["npx", "serve", "-s", "dist", "-l", "3000"]

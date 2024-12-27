@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 # this is for the .env decoupling
-from decouple import config
+from decouple import Config, Csv
+
 
 #here importing os and setting up templates so django can recongnize the index.html
 import os
@@ -95,6 +96,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'backend',  # Add this for Docker
+    'backendcareconnected.onrender.com',
+    'frontendcareconnected.onrender.com',
 ]
 
 
@@ -210,6 +213,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Sending messages logic
+config = Config('/app/.env')
 
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
@@ -226,3 +230,5 @@ CELERY_TASK_SERIALIZER = 'json'                 # Serialize tasks as JSON
 
 # Celery Results Backend
 CELERY_RESULT_BACKEND = 'django-db'
+
+DEBUG = config('DEBUG', cast=bool)
