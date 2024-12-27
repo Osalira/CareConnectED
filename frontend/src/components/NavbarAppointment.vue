@@ -168,7 +168,7 @@ export default {
     const handleInput = debounce(async () => {
       if (searchQuery.value.length > 0) {
         try {
-          const response = await axios.get(`http://localhost:8001/api/patient_records_nav_search/`, {
+          const response = await axios.get(`https://backendcareconnected.onrender.com/api/patient_records_nav_search/`, {
             params: { query: searchQuery.value }
           });
           searchResults.value = response.data;

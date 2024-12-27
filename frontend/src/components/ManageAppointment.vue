@@ -110,7 +110,7 @@ export default {
   methods: {
   async fetchAppointments(state) {
     try {
-      const response = await axios.get(`http://localhost:8001/api/appointments/${state}/`);
+      const response = await axios.get(`https://backendcareconnected.onrender.com/api/appointments/${state}/`);
       if (state === 'triage') this.triageResults = response.data;
       else if (state === 'checked-in') this.checkedInResults = response.data;
       else if (state === 'checked-out') this.checkedOutResults = response.data;
@@ -134,7 +134,7 @@ export default {
 
       if (currentState !== newState) {
         try {
-          await axios.patch(`http://localhost:8001/api/appointments/${appointmentId}/state/`, {
+          await axios.patch(`https://backendcareconnected.onrender.com/api/appointments/${appointmentId}/state/`, {
             state: newState,
           });
           await this.fetchAppointments(currentState); // Refresh source column

@@ -10,14 +10,14 @@ export const useAuthStore = defineStore('auth', {
     },
     actions: {
         async setCsrfToken() {
-            await fetch('http://localhost:8001/api/set-csrf-token', {
+            await fetch('https://backendcareconnected.onrender.com/api/set-csrf-token', {
                 method: 'GET',
                 credentials: 'include'
             })
         },
 
         async login(employee_id, password, router = null) {
-            const response = await fetch('http://localhost:8001/api/login', {
+            const response = await fetch('https://backendcareconnected.onrender.com/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore('auth', {
         
         async logout(router=null) {
             try {
-                const response = await fetch('http://localhost:8001/api/logout', {
+                const response = await fetch('https://backendcareconnected.onrender.com/api/logout', {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': getCSRFToken()
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
 
         async fetchUser() {
             try {
-                const response = await fetch('http://localhost:8001/api/user', {
+                const response = await fetch('https://backendcareconnected.onrender.com/api/user', {
                     credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',

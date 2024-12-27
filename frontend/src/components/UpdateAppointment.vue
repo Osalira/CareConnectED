@@ -98,7 +98,7 @@
     methods: {
       async fetchAppointmentsLast24Hours() {
         try {
-          const response = await axios.get("http://localhost:8001/api/appointments-last-24-hours/");
+          const response = await axios.get("https://backendcareconnected.onrender.com/api/appointments-last-24-hours/");
           this.appointments = response.data;
           this.filteredAppointments = response.data;
         } catch (error) {
