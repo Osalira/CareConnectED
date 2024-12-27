@@ -7,12 +7,12 @@
 # Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
 
 
-# ARG NODE_VERSION=20.9.0
+ARG NODE_VERSION=20.9.0
 
-# FROM node:${NODE_VERSION}-alpine
+FROM node:${NODE_VERSION}-alpine
 
 # Use a Node.js base image
-FROM node:18-bullseye
+# FROM node:18-bullseye
 
 # Set the working directory
 WORKDIR /app

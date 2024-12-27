@@ -16,10 +16,13 @@ export default defineConfig({
     },
   },
   server: {
+    host: '0.0.0.0', // Expose to the network
+    port: 5173, // Default Vite port
     proxy: {
       '/api': {
         target: 'https://backendcareconnected.onrender.com', // Use the service name "backend"
         changeOrigin: true,
+        secure: false,
       },
     },
   },

@@ -99,6 +99,8 @@ ALLOWED_HOSTS = [
     'backend',  # Add this for Docker
     'https://backendcareconnected.onrender.com',
     'https://localhost-i0ln.onrender.com',
+     'http://backendcareconnected.onrender.com',
+    'http://localhost-i0ln.onrender.com',
     'backendcareconnected.onrender.com',
     'localhost-i0ln.onrender.com',
 ]
