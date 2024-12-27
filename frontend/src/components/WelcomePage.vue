@@ -83,6 +83,14 @@
       </div>
     </div>
   </div>
+    <!-- Footer Section -->
+    <footer class="text-center py-3 mt-5 border-top">
+      <p>Made by Ben Osalira</p>
+      <a href="https://www.benosalira.com/" target="_blank"
+      rel="noopener noreferrer" class="text-primary">
+        Contact Info
+      </a>
+    </footer>
 </template>
 
 <script>
@@ -159,4 +167,19 @@ button[disabled] {
   display: block;
   margin-top: 0;
 }
+
+footer {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-size: 0.9rem;
+
+}
+footer a {
+  color: #007bff;
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
+}
+
 </style>

@@ -13,7 +13,9 @@ from .views import (
     patient_records,
     patient_detail_with_appointments,
     patient_records_nav_search,
-    today_overview, recent_activity, current_schedule,
+    today_overview, 
+    recent_activity,
+    current_schedule,
 )
 from .views import appointments_last_24_hours
 urlpatterns = [

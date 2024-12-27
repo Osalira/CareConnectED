@@ -7,7 +7,7 @@
           <div class="top">
             <img
               class="logo"
-              src="/src/assets/Logo1.jpeg"
+              src="../assets/Logo1.jpeg"
             />
             <div class="title">Sign In</div>
             <div class="subtitle">

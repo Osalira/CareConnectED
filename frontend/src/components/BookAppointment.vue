@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
         <div class="container-fluid">
           <!-- Logo Section -->
           <a class="navbar-brand" href="#">
-            <img src="https://www.mistered.de/MisterEDk.png" alt="Logo" width="120" />
+            <img src="../assets/Logo1.jpeg" alt="Logo" width="120" />
           </a>
   
           <!-- Right Side: Changed Mind question and Log out Button -->
@@ -112,15 +112,15 @@ import Swal from 'sweetalert2';
               severity: this.severity.toLowerCase(),
             });
 
-          console.log({
-              first_name: this.firstName,
-              last_name: this.lastName,
-              address: this.address,
-              phone_number: this.phoneNumber,
-              insurance_number: this.insuranceNumber,
-              description: this.description,
-              severity: this.severity,
-            });
+          // console.log({
+          //     first_name: this.firstName,
+          //     last_name: this.lastName,
+          //     address: this.address,
+          //     phone_number: this.phoneNumber,
+          //     insurance_number: this.insuranceNumber,
+          //     description: this.description,
+          //     severity: this.severity,
+          //   });
           Swal.fire({
             title: `Appointment Booked!`,
             text: `${this.firstName} ${this.lastName}, you are put on the queue. You will receive a text with your scheduled appointment time about an hour before your appointment.`,

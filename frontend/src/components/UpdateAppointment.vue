@@ -157,6 +157,7 @@
     border-radius: 8px;
     background-color: #f9f9f9;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    /* overflow-y: auto; */
   }
   
   h1 {
@@ -211,8 +212,16 @@
   .appointments-table th {
     background-color: #f1f1f1;
     font-weight: bold;
+    /* overflow-y: auto; */
   }
-  
+
+  .appointments-table thead{
+    position: sticky;
+  }
+
+  .appointments-table tbody{
+    overflow-y: auto;
+  }
   .action-button {
     padding: 5px 10px;
     margin: 2px;
@@ -271,5 +280,49 @@
     background-color: #d4edda;
     color: #155724;
   }
+  /* some c table */
+  /* Ensure body and html have fixed height */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Prevent scrollbar on the body */
+  display: flex;
+  flex-direction: column;
+}
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.appointments-table thead {
+  position: sticky;
+  top: 0;
+  background-color: #f1f1f1; /* Header background */
+  z-index: 1;
+}
+
+.appointments-table tbody {
+  /* display: block; */
+  max-height: 600px; /* Set desired height for the scrollable body */
+  overflow-y: auto;
+}
+
+.appointments-table tr {
+  /* display: table; */
+  width: 100%;
+  table-layout: fixed; /* Ensures columns align correctly */
+}
+
+.appointments-table th,
+.appointments-table td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.appointments-table th {
+  font-weight: bold;
+}
+
   </style>
   

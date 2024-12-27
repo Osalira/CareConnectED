@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+# this is for the .env decoupling
+from decouple import config
+
 #here importing os and setting up templates so django can recongnize the index.html
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'appointments',
     #for a server running in a different port than the main file
     'corsheaders',
+    'django_celery_results',
 ]
 
 #//This is a set up in the customAuth_backends.py that allows to use the authenticate
@@ -87,10 +91,15 @@ DJOSER = {
 
 AUTH_USER_MODEL = 'employees.Employee'
 
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'backend',  # Add this for Docker
+]
 
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 LOGGING = {
     'version': 1,
@@ -199,3 +208,21 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Sending messages logic
+
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
+
+# Celery Settings
+# Celery Configuration
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as the message broker
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+
+CELERY_ACCEPT_CONTENT = ['json']                # Accept JSON messages
+CELERY_TASK_SERIALIZER = 'json'                 # Serialize tasks as JSON
+# CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Store results in Redis
+
+# Celery Results Backend
+CELERY_RESULT_BACKEND = 'django-db'

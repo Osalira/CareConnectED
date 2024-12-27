@@ -11,6 +11,8 @@ from django.utils.timezone import now, timedelta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models.functions import Lower
+from appointments.tasks import send_sms_reminder_task  #
+import math
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,11 +21,32 @@ logger = logging.getLogger(__name__)
 def book_appointment(request):
     serializer = AppointmentSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        # Save the appointment
+        appointment = serializer.save()
+
+        # Calculate estimated waiting time ( adjust the ER capacity dynamically)
+        ER_CAPACITY = 15  # Example capacity
+        triage_count = Appointment.objects.filter(state='triage').count()
+        checked_in_count = Appointment.objects.filter(state='checked-in').count()
+        total_patients = triage_count + checked_in_count
+        estimated_time = math.ceil(max(1, min(4, total_patients / ER_CAPACITY)))
+
+        # Send initial SMS notification
+        message = f"Thank you for booking an appointment. Your estimated waiting time is {estimated_time} hours."
+        send_sms_reminder_task.delay(appointment.patient.phone_number, message)
+
+        # Schedule reminder for 30 minutes before the estimated time
+        reminder_time = now() + timedelta(hours=estimated_time - 0.5)
+        send_sms_reminder_task.apply_async(
+            args=[appointment.patient.phone_number, "We are ready to see you in 30 minutes."],
+            eta=reminder_time
+        )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         print("Serializer errors:", serializer.errors)  # Log detailed errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 
 # new 

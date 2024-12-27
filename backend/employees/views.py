@@ -29,7 +29,7 @@ def login_view(request):
         data = json.loads(request.body.decode('utf-8'))
         employee_id = data['employee_id']
         password = data['password']
-        print("Received data:", data)
+        # print("Received data:", data)
     except json.JSONDecodeError:
         return JsonResponse(
             {'success': False, 'message': 'Invalid JSON'}, status=400
@@ -79,7 +79,7 @@ def register(request):
         return JsonResponse({'error': 'Invalid JSON format'}, status=400)
 
     # Log data received for debugging
-    print("Received data:", data)
+    # print("Received data:", data)
 
     # Initialize form with parsed data
     form = CreateEmployeeForm(data)
@@ -89,6 +89,6 @@ def register(request):
         return JsonResponse({'success': 'User registered successfully'}, status=201)
     else:
         # Log form errors for debugging
-        print("Form errors:", form.errors)
+        # print("Form errors:", form.errors)
         errors = form.errors.as_json()
         return JsonResponse({'error': errors}, status=400)
