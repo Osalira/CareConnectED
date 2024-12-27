@@ -68,8 +68,9 @@ INSTALLED_APPS = [
 # Allow specific origins (your frontend URL)
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]  # We add your frontend URL here.
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173']  # We add your frontend URL here.
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://localhost-i0ln.onrender.com",]  # We add your frontend URL here.
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', "https://localhost-i0ln.onrender.com",]  # We add your frontend URL here.
+
 
 
 SIMPLE_JWT = {
