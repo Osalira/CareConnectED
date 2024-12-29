@@ -1,4 +1,4 @@
-# appointments/views.py
+# backend/appointments/views.py
 from django.db.models import Q  # Import Q for complex queries
 from rest_framework import status
 from rest_framework.decorators import api_view

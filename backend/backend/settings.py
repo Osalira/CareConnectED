@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-# this is for the .env decoupling
-from decouple import Config, Csv
-
-
-#here importing os and setting up templates so django can recongnize the index.html
 import os
+# this is for the .env decoupling
+from decouple import config, Csv
+
+import dj_database_url
+#here importing os and setting up templates so django can recongnize the index.html
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,10 +28,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*)-dv@o8e86#!v@mui=g6jpc6royg@^$7&%_6)&rr=ap_*mtth'
+SECRET_KEY = config('SECRET_KEY', default='unsafe-default-key')  # Provide a default for safety
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)  # Convert DEBUG to a boolean
+
+# Load SECRET_KEY and DEBUG from the .env file
+
 
 ALLOWED_HOSTS = []
 
@@ -68,8 +73,8 @@ INSTALLED_APPS = [
 # Allow specific origins (your frontend URL)
 
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://localhost-i0ln.onrender.com",]  # We add your frontend URL here.
-CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', "https://localhost-i0ln.onrender.com",]  # We add your frontend URL here.
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173","https://careconnected-frontend-v1-0.onrender.com",]  # We add your frontend URL here.
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', "https://careconnected-frontend-v1-0.onrender.com",]  # We add your frontend URL here.
 
 
 
@@ -93,17 +98,7 @@ DJOSER = {
 
 AUTH_USER_MODEL = 'employees.Employee'
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    'backend',  # Add this for Docker
-    'https://backendcareconnected.onrender.com',
-    'https://localhost-i0ln.onrender.com',
-     'http://backendcareconnected.onrender.com',
-    'http://localhost-i0ln.onrender.com',
-    'backendcareconnected.onrender.com',
-    'localhost-i0ln.onrender.com',
-]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,https://careconnected-backend-v1-0.onrender.com,careconnected-backend-v1-0.onrender.com', cast=Csv())
 
 
 
@@ -169,9 +164,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+DATABASES['default'] = dj_database_url.parse(config('DATABASE_URL'))
 
-
-
+# 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -218,22 +213,30 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Sending messages logic
-config = Config('/app/.env')
+# config = Config('/app/.env')
 
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 
 # Celery Settings
-# Celery Configuration
+# Celery Configuration for dev
 # CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as the message broker
-CELERY_BROKER_URL = 'redis://redis:6379/0'
+#celerey with redis on docker
+##UNCOMMENT IF RUNNING LOCALLY AND COMMENT FOR PRODUCTION
+# CELERY_BROKER_URL = 'redis://redis:6379/0'
 
 CELERY_ACCEPT_CONTENT = ['json']                # Accept JSON messages
 CELERY_TASK_SERIALIZER = 'json'                 # Serialize tasks as JSON
 # CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'  # Store results in Redis
 
-# Celery Results Backend
-CELERY_RESULT_BACKEND = 'django-db'
+# Celery Results Backend for dev(optional, can be set to that or just the local host port)
+##UNCOMMENT IF RUNNING LOCALLY AND COMMENT FOR PRODUCTION
+# CELERY_RESULT_BACKEND = 'django-db'
 
-DEBUG = config('DEBUG', cast=bool)
+#for production
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379')
+CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379')
+
+# CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+# CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379')

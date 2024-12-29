@@ -16,7 +16,15 @@ app = Celery('backend')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # 
+app.conf.update(
+    broker_connection_retry_on_startup=True,
+)
+# for development
 app.conf.worker_pool = 'solo'
+
+#in production
+# app.conf.worker_pool = 'prefork'  # Default pool for production
+
 # Autodiscover tasks in all installed apps.
 app.autodiscover_tasks()
 

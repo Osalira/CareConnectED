@@ -97,7 +97,7 @@ export default {
         return;
       }
       try {
-        const response = await fetch('http://localhost:8001/api/register', {
+        const response = await fetch('https://careconnected-backend-v1-0.onrender.com/api/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

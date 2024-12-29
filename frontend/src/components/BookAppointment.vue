@@ -1,4 +1,3 @@
-import Swal from 'sweetalert2';
 <template>
     <div class="book-appointment">
       <!-- Navbar -->
@@ -100,7 +99,7 @@ import Swal from 'sweetalert2';
     methods: {
       async submitAppointment() {
         try {
-          const response = await axios.post('https://backendcareconnected.onrender.com/api/appointments/', {
+          const response = await axios.post('https://careconnected-backend-v1-0.onrender.com/api/appointments/', {
               patient: {
                 first_name: this.firstName,
                 last_name: this.lastName,

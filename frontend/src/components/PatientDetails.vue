@@ -98,7 +98,7 @@
   
       try {
         // Fetch patient details and appointments
-        const patientResponse = await axios.get(`/api/patient-records/${patientId}/`);
+        const patientResponse = await axios.get(`https://careconnected-backend-v1-0.onrender.com/api/patient-records/${patientId}/`);
         this.patient = patientResponse.data.patient;
         this.appointments = patientResponse.data.appointments;
   

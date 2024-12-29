@@ -63,7 +63,7 @@
             console.error('Missing appointment ID');
             return;
           }
-          await axios.patch(`/api/appointments/${this.appointment.id}/doctor-notes/`, {
+          await axios.patch(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${this.appointment.id}/doctor-notes/`, {
             doctor_notes: this.notes,
             doctor_name: this.doctorName,
           });

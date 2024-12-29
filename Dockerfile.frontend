@@ -1,0 +1,25 @@
+# 1. Use a Node base image for building
+# 1. Build Stage
+ARG NODE_VERSION=20.9.0
+FROM node:${NODE_VERSION} AS build
+
+WORKDIR /app
+COPY frontend/package*.json ./
+RUN npm install
+
+COPY frontend/ ./
+RUN npm run build
+
+# 2. Production Stage
+ARG NODE_VERSION=20.9.0
+FROM node:${NODE_VERSION}-alpine
+
+WORKDIR /app
+RUN npm install -g serve
+
+# Copy the compiled `dist` folder from the build stage
+COPY --from=build /app/dist ./dist
+
+EXPOSE 3000
+
+CMD [ "serve", "-s", "dist", "-l", "3000" ]

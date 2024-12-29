@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import path from 'path' // Ensure path module is imported for alias resolution
 
-// https://vite.dev/config/
 export default defineConfig({
   css: {
     preprocessorOptions: {
@@ -12,7 +12,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': 'src', // Maps `@` to the `src` directory
+      '@': path.resolve(__dirname, './src'), // Ensure absolute path resolution
     },
   },
   server: {
@@ -20,12 +20,11 @@ export default defineConfig({
     port: 5173, // Default Vite port
     proxy: {
       '/api': {
-        target: 'https://backendcareconnected.onrender.com', // Use the service name "backend"
-        changeOrigin: true,
-        secure: false,
+        target: 'https://careconnected-backend-v1-0.onrender.com', // Local backend URL
+        changeOrigin: true, // Rewrite the host header
+        secure: false, // Accept insecure connections (useful for development)
       },
     },
   },
   plugins: [vue()],
 })
-

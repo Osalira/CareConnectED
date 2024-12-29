@@ -96,7 +96,7 @@ export default {
   methods: {
     async submitAppointment() {
       try {
-        const response = await axios.post('https://backendcareconnected.onrender.com/api/appointments/', {
+        const response = await axios.post('https://careconnected-backend-v1-0.onrender.com/api/appointments/', {
               patient: {
                 first_name: this.firstName,
                 last_name: this.lastName,

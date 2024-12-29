@@ -98,7 +98,7 @@
     methods: {
       async fetchAppointmentsLast24Hours() {
         try {
-          const response = await axios.get("https://backendcareconnected.onrender.com/api/appointments-last-24-hours/");
+          const response = await axios.get("https://careconnected-backend-v1-0.onrender.com/api/appointments-last-24-hours/");
           this.appointments = response.data;
           this.filteredAppointments = response.data;
         } catch (error) {
@@ -114,11 +114,11 @@
         );
       },
       async markCheckedIn(id) {
-        await axios.patch(`http://localhost:8001/api/appointments/${id}/state/`, { state: "checked-in" });
+        await axios.patch(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${id}/state/`, { state: "checked-in" });
         this.fetchAppointmentsLast24Hours();
       },
       async markCheckedOut(id) {
-        await axios.patch(`http://localhost:8001/api/appointments/${id}/state/`, { state: "checked-out" });
+        await axios.patch(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${id}/state/`, { state: "checked-out" });
         this.fetchAppointmentsLast24Hours();
       },
       openRescheduleModal(appointment) {
