@@ -78,7 +78,6 @@
   </template>
   
   <script>
-  import axios from "axios";
   import NavbarAppointment from "./NavbarAppointment.vue";
   import RescheduleModal from "./RescheduleModal.vue";
   import NotesModal from "./NotesModal.vue";

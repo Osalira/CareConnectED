@@ -14,10 +14,13 @@ from .forms import CreateEmployeeForm  # Import the updated form
 import json
 
 # Custom JWT Token Obtain Pair View
+# backend/employees/views.py
+
 # Custom Token Obtain Pair View
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view to obtain JWT tokens with additional user data.
+    Sets the refresh token in an HTTP-Only Secure cookie and only sends access token in response.
     """
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -29,18 +32,57 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         user = serializer.user
         refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
 
-        return Response({
+        response_data = {
             'success': True,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+            'access': str(access_token),
             'user': {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'employee_id': user.employee_id
                 # Add other user fields as needed
             }
-        })
+        }
+
+        response = Response(response_data, status=status.HTTP_200_OK)
+
+        # Set the refresh token in an HTTP-Only Secure cookie
+        response.set_cookie(
+            key='refresh_token',
+            value=str(refresh),
+            httponly=True,
+            secure=True,  # Ensure it's only sent over HTTPS
+            samesite='Strict',  # or 'Lax' based on your needs
+            path='/api/token/refresh/',  # Path for refresh endpoint
+            max_age=24 * 60 * 60,  # 1 day in seconds
+        )
+
+        return response
+
+# Custom Token Refresh View
+class CustomTokenRefreshView(TokenObtainPairView):
+    """
+    Custom view to refresh JWT access tokens using the refresh token from HTTP-Only cookie.
+    """
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.COOKIES.get('refresh_token')
+
+        if not refresh_token:
+            return Response({'success': False, 'message': 'No refresh token provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            new_access_token = refresh.access_token
+
+            response_data = {
+                'success': True,
+                'access': str(new_access_token),
+            }
+
+            response = Response(response_data, status=status.HTTP_200_OK)
+            return response
+        except Exception as e:
+            return Response({'success': False, 'message': 'Invalid refresh token'}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])  # Allow unauthenticated users to register
@@ -66,13 +108,19 @@ def register(request):
 @permission_classes([IsAuthenticated])
 def logout_view(request):
     """
-    Logout a user by blacklisting the provided refresh token.
+    Logout a user by blacklisting the refresh token from the cookie and deleting the cookie.
     """
     try:
-        refresh_token = request.data["refresh"]
+        refresh_token = request.COOKIES.get('refresh_token')
+        if not refresh_token:
+            return Response({'success': False, 'message': 'No refresh token provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
         token = RefreshToken(refresh_token)
-        token.blacklist()  # Blacklist the refresh token
-        return Response({'success': True, 'message': 'Logged out successfully.'}, status=status.HTTP_205_RESET_CONTENT)
+        token.blacklist()
+
+        response = Response({'success': True, 'message': 'Logged out successfully.'}, status=status.HTTP_205_RESET_CONTENT)
+        response.delete_cookie('refresh_token')
+        return response
     except Exception as e:
         return Response({'success': False, 'message': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,3 +138,4 @@ def user_info(request):
         },
         status=200
     )
+

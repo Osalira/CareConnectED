@@ -10,7 +10,7 @@
             <div class="title">Create an Account</div>
             <div class="subtitle">
               Already have an account?
-              <router-link class="subtitle-action" to="/signin">Sign In</router-link>
+              <router-link class="subtitle-action" to="/">Sign In</router-link>
             </div>
           </div>
 
@@ -160,6 +160,8 @@ export default {
   },
 };
 </script>
+
+
 
   
 <style lang="scss" scoped>

@@ -59,7 +59,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',         # Can be removed if not using CSRF
+    'django.middleware.csrf.CsrfViewMiddleware',         # Retain if needed for other forms
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -136,8 +136,8 @@ REST_FRAMEWORK = {
 
 # SIMPLE JWT CONFIGURATION
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Adjust as needed
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Adjust as needed
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,  # Enable blacklisting after rotation
     
@@ -156,7 +156,7 @@ SIMPLE_JWT = {
 }
 
 # CORS SETTINGS
-CORS_ALLOW_CREDENTIALS = False  # Since tokens are sent via headers, credentials aren't needed
+CORS_ALLOW_CREDENTIALS = True  # Allow cookies to be sent
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",                      # Local Frontend (Vue)
     "http://localhost:3000",                      # Alternative Frontend (if applicable)
@@ -178,7 +178,6 @@ LOGGING = {
     },
 }
 
-
 # Twilio Configuration
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
@@ -188,10 +187,10 @@ TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 # For Production (Commented Out)
-# CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379')
-# CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379')
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379')
+CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379')
 
 # For local development comment out
 # Redis as the message broker
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  
-CELERY_RESULT_BACKEND = 'django-db'
+# CELERY_BROKER_URL = 'redis://localhost:6379/0'  
+# CELERY_RESULT_BACKEND = 'django-db'

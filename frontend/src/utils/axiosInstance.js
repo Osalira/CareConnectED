@@ -6,7 +6,7 @@ import router from '@/router';
 
 const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || 'https://careconnected-backend-v1-0.onrender.com/api',
-    withCredentials: false, // JWTs are sent via headers, not cookies
+    withCredentials: true, // Enable sending cookies
     headers: {
         'Content-Type': 'application/json',
     },
@@ -30,16 +30,16 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const authStore = useAuthStore();
 
-        // If Unauthorized, attempt to refresh the token
-        if (error.response && error.response.status === 401 && authStore.refreshToken) {
+        // If Unauthorized and not already trying to retry
+        if (error.response && error.response.status === 401 && !error.config.__isRetryRequest) {
+            error.config.__isRetryRequest = true;
             try {
                 await authStore.refreshAccessToken();
                 // Retry the original request with the new access token
-                error.config.headers['Authorization'] = `Bearer ${authStore.accessToken}`;
                 return axiosInstance(error.config);
             } catch (refreshError) {
                 // Refresh token is invalid or expired, logout the user
-                authStore.logout();
+                await authStore.logout();
                 router.push({ name: 'SignInPage' });
                 return Promise.reject(refreshError);
             }

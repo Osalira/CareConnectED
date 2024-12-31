@@ -96,7 +96,7 @@
       const patientId = this.$route.params.patientId;
   
       try {
-        // Fetch patient details and appointments
+        // Fetch patient details and appointmentsthis.$axios
         const patientResponse = await this.$axios.get(`/patient-records/${patientId}/`);
         this.patient = patientResponse.data.patient;
         this.appointments = patientResponse.data.appointments;

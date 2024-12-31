@@ -1,8 +1,9 @@
+<!-- src/components/NavbarHomePage.vue -->
+
 <template>
   <nav class="navbar bg-body-tertiary fixed-top">
     <div class="container-fluid">
       <!-- Page title as a clickable route -->
-      <!-- <router-link :to="pageRoute" class="navbar-brand">{{ pageTitle }}</router-link> -->
       <router-link :to="pageRoute" class="navbar-brand">CareConnectED</router-link>
 
       <!-- Centered search bar (only for HomePage) -->
@@ -43,9 +44,8 @@
         </div>
       </form>
       
-      <!-- <h5 class="offcanvas-title ms-auto me-3 fw-bold" id="offcanvasNavbarLabel">{{ username }}</h5> -->
-       <!-- Navbar links -->
-       <ul class="navbar-nav flex-row ms-auto d-none d-md-flex me-2">
+      <!-- Navbar links -->
+      <ul class="navbar-nav flex-row ms-auto d-none d-md-flex me-2">
         <li class="nav-item">
           <router-link class="nav-link active" to="/records-history">Patient Records</router-link>
         </li>
@@ -77,11 +77,11 @@
               <router-link class="nav-link active" to="/update-appointment" @click="closeOffcanvas">Update appointments Info</router-link>
             </li>
             <li class="nav-item">
-                <router-link class="nav-link active" to="/records-history">Records History</router-link>
+                <router-link class="nav-link active" to="/records-history">Patients Records</router-link>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link active" to="/" @click.prevent="logout">Logout</a>
+              <a class="nav-link active" href="#" @click.prevent="logout">Logout</a>
             </li>
           </ul>
         </div>
@@ -92,12 +92,11 @@
 
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, getCurrentInstance } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../store/auth';
+import axiosInstance from '@/utils/axiosInstance.js'; // Import directly
 import { debounce } from 'lodash';
-
-
 export default {
   name: 'NavbarHomePage',
   setup() {
@@ -105,47 +104,35 @@ export default {
     const router = useRouter();
     const authStore = useAuthStore();
 
+    // If using getCurrentInstance to access global Axios
+    // const { proxy } = getCurrentInstance();
+    // const $axios = proxy.$axios;
+
+    // Alternatively, using the imported axiosInstance
+    const $axios = axiosInstance;
+
     const pageTitle = computed(() => {
       switch (route.name) {
         case 'HomePage':
-          // return 'Home';
-          return 'CareConnectED';
         case 'CreateAppointment':
-          // return 'Create Appointment';
-          return 'CareConnectED';
         case 'ManageAppointment':
-          // return 'Manage Appointments';
-          return 'CareConnectED';
         case 'EditProfile':
-          // return 'Edit Profile';
-          return 'CareConnectED';
         case 'UpdateAppointment':
-          // return 'Update Appointment';
-          return 'CareConnectED';
         case 'RecordsHistory':
-          // return 'Patient Records';
           return 'CareConnectED';
         default:
           return 'Home';
       }
     });
+
     const pageRoute = computed(() => {
       switch (route.name) {
         case 'CareConnectED':
-          return '/home-page';
         case 'HomePage':
-          return '/home-page';
         case 'CreateAppointment':
-          // return '/create-appointment';
-          return '/home-page';
         case 'ManageAppointment':
-          // return '/manage-appointment';
-          return '/home-page';
         case 'UpdateAppointment':
-          // return '/update-appointment';
-          return '/home-page';
         case 'RecordsHistory':
-          // return '/records-history';
           return '/home-page';
         default:
           return '/home-page'; // Fallback route
@@ -155,6 +142,7 @@ export default {
     const isHomePage = computed(() => route.name === 'HomePage');
 
     const username = computed(() => authStore.user?.first_name || 'Guest');
+
     const logout = async () => {
       await authStore.logout(router);
     };
@@ -162,20 +150,27 @@ export default {
     const searchQuery = ref('');
     const searchResults = ref([]);
     const showDropdown = ref(false);
+    const isLoading = ref(false);
+    const error = ref('');
 
-    // Inside your setup function
+    // Debounced input handler
     const handleInput = debounce(async () => {
       if (searchQuery.value.length > 0) {
+        isLoading.value = true;
+        error.value = '';
         try {
-          const response = await this.$axios.get(`/patient_records_nav_search/`, {
+          const response = await $axios.get(`/patient_records_nav_search/`, {
             params: { query: searchQuery.value }
           });
           searchResults.value = response.data;
           showDropdown.value = true;
-        } catch (error) {
-          console.error('Error fetching search results:', error);
+        } catch (err) {
+          console.error('Error fetching search results:', err);
+          error.value = 'Failed to fetch search results.';
           searchResults.value = [];
           showDropdown.value = false;
+        } finally {
+          isLoading.value = false;
         }
       } else {
         searchResults.value = [];
@@ -183,14 +178,13 @@ export default {
       }
     }, 300);
 
-  
     const selectPatient = (patient) => {
       searchQuery.value = '';
       searchResults.value = [];
       showDropdown.value = false;
+      console.log("id of the patient", patient.id);
       router.push({ name: 'PatientDetails', params: { patientId: patient.id } }); 
     };
-
 
     const handleSearch = (event) => {
       if (searchResults.value.length) {
@@ -221,11 +215,12 @@ export default {
       handleSearch,
       closeDropdown,
       closeOffcanvas,
-      pageRoute
+      pageRoute,
+      isLoading,
+      error
     };
   },
 };
-
 </script>
 
 <style scoped>
@@ -378,5 +373,23 @@ export default {
 .dropdown-item.text-muted {
   color: #6c757d;
   cursor: default;
+}
+
+/* Error message styling */
+.error {
+  color: red;
+  margin-top: 10px;
+  font-size: 0.9rem;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.action:disabled {
+  background: #aaa;
+  cursor: not-allowed;
 }
 </style>

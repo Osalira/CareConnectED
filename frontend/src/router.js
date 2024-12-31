@@ -18,61 +18,61 @@ const routes = [
     path: '/',
     name: 'WelcomePage',
     component: WelcomePage,
-    meta: { guest: true },
+    meta: { guest: true }, // Accessible by guests
   },
   {
     path: '/signin',
     name: 'SignInPage',
     component: SignInPage,
-    meta: { guest: true },
+    meta: { guest: true }, // Accessible by guests
   },
   {
     path: '/signup',
     name: 'SignUpPage',
     component: SignUpPage,
-    meta: { guest: true },
-  },
-  {
-    path: '/home-page',
-    name: 'HomePage',
-    component: HomePage,
-    meta: { requiresAuth: true },
+    meta: { guest: true }, // Accessible by guests
   },
   {
     path: '/book-appointment',
     name: 'BookAppointment',
     component: BookAppointment,
-    meta: { guest: true },
+    meta: { public: true }, // Accessible by anyone
+  },
+  {
+    path: '/home-page',
+    name: 'HomePage',
+    component: HomePage,
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
   {
     path: '/manage-appointment',
     name: 'ManageAppointment',
     component: ManageAppointment,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
   {
     path: '/create-appointment',
     name: 'CreateAppointment',
     component: CreateAppointment,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
   {
     path: '/update-appointment',
     name: 'UpdateAppointment',
     component: UpdateAppointment,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
   {
     path: '/records-history',
     name: 'RecordsHistory',
     component: RecordsHistory,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
   {
     path: '/patients/:patientId/details',
     name: 'PatientDetails',
     component: PatientDetails,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true }, // Accessible by authenticated employees
   },
 ];
 
@@ -82,17 +82,26 @@ const router = createRouter({
 });
 
 // Navigation Guard
-router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  const isAuthenticated = authStore.isAuthenticated;
+// router.beforeEach(async (to, from, next) => {
+//   const authStore = useAuthStore();
+//   const isAuthenticated = authStore.isAuthenticated;
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'WelcomePage' });
-  } else if (to.meta.guest && isAuthenticated) {
-    next({ name: 'HomePage' });
-  } else {
-    next();
-  }
-});
+//   // If accessing a protected route
+//   if (to.meta.requiresAuth && !isAuthenticated) {
+//     next({ name: 'WelcomePage', query: { redirect: to.fullPath } });
+//   }
+//   // If accessing a guest route while authenticated
+//   else if (to.meta.guest && isAuthenticated) {
+//     next({ name: 'HomePage' });
+//   }
+//   // If accessing a public route
+//   else if (to.meta.public) {
+//     next();
+//   }
+//   // Default behavior
+//   else {
+//     next();
+//   }
+// });
 
 export default router;
