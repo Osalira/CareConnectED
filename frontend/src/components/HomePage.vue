@@ -54,7 +54,6 @@
 
 <script>
 import NavbarAppointment from './NavbarAppointment.vue';
-import axios from 'axios';
 
 export default {
   name: 'HomePage',
@@ -72,7 +71,7 @@ export default {
   methods: {
   async fetchTodayOverview() {
     try {
-      const response = await axios.get('https://careconnected-backend-v1-0.onrender.com/api/appointments/today-overview');
+      const response = await this.$axios.get('/appointments/today-overview');
       const data = response.data;
       this.todayAppointmentsCount = data.appointments || 0;
       this.pendingTriageCount = data.pending_triage || 0;
@@ -82,7 +81,7 @@ export default {
   },
   async fetchRecentActivity() {
     try {
-      const response = await axios.get('https://careconnected-backend-v1-0.onrender.com/api/appointments/recent-activity');
+      const response = await this.$axios.get('/appointments/recent-activity');
       const data = response.data;
       this.recentActivity = data.recent_activity || [];
     } catch (error) {
@@ -91,7 +90,7 @@ export default {
   },
   async fetchCurrentSchedule() {
     try {
-      const response = await axios.get('https://careconnected-backend-v1-0.onrender.com/api/appointments/current-schedule');
+      const response = await this.$axios.get('/appointments/current-schedule');
       const data = response.data;
       this.currentSchedule = data.scheduled_patients || [];
     } catch (error) {

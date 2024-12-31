@@ -95,7 +95,7 @@
 
 <script>
 import SignInPage from './SignInPage.vue';
-import { useSeverityStore } from '../store/severity';
+import { useSeverityStore } from '@/store/severity';
 
 export default {
   components: {

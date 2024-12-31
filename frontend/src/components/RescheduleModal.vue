@@ -52,7 +52,7 @@
             console.error('Missing appointment ID');
             return;
           }
-          await axios.patch(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${this.appointment.id}/reschedule/`, {
+          await this.$axios.patch(`/appointments/${this.appointment.id}/reschedule/`, {
             scheduled_time: this.newTime,
           });
           Swal.fire({

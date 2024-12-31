@@ -22,7 +22,8 @@ export default defineConfig({
       '/api': {
         target: 'https://careconnected-backend-v1-0.onrender.com', // Local backend URL
         changeOrigin: true, // Rewrite the host header
-        secure: false, // Accept insecure connections (useful for development)
+        secure: true, // false for development (useful for development)
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
     },
   },

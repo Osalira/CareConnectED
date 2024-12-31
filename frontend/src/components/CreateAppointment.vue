@@ -76,7 +76,7 @@
 <script>
 import NavbarAppointment from './NavbarAppointment.vue';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+// import axios from 'axios';
 
 export default {
   components: {
@@ -96,7 +96,7 @@ export default {
   methods: {
     async submitAppointment() {
       try {
-        const response = await axios.post('https://careconnected-backend-v1-0.onrender.com/api/appointments/', {
+        const response = await this.$axios.post('/appointments/', {
               patient: {
                 first_name: this.firstName,
                 last_name: this.lastName,

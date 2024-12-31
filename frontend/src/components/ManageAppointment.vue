@@ -74,7 +74,7 @@
 import { ref } from 'vue';
 import { Modal } from 'bootstrap';
 import NavbarAppointment from './NavbarAppointment.vue';
-import axios from 'axios';
+
 
 export default {
   name: 'ManageAppointment',
@@ -110,7 +110,7 @@ export default {
   methods: {
   async fetchAppointments(state) {
     try {
-      const response = await axios.get(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${state}/`);
+      const response = await this.$axios.get(`/appointments/${state}/`);
       if (state === 'triage') this.triageResults = response.data;
       else if (state === 'checked-in') this.checkedInResults = response.data;
       else if (state === 'checked-out') this.checkedOutResults = response.data;
@@ -134,7 +134,7 @@ export default {
 
       if (currentState !== newState) {
         try {
-          await axios.patch(`https://careconnected-backend-v1-0.onrender.com/api/appointments/${appointmentId}/state/`, {
+          await this.$axios.patch(`/appointments/${appointmentId}/state/`, {
             state: newState,
           });
           await this.fetchAppointments(currentState); // Refresh source column

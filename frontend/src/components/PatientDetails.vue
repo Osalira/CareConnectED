@@ -55,7 +55,6 @@
   
   
   <script>
-  import axios from "axios";
   import NavbarAppointment from "./NavbarAppointment.vue";
   
   export default {
@@ -98,7 +97,7 @@
   
       try {
         // Fetch patient details and appointments
-        const patientResponse = await axios.get(`https://careconnected-backend-v1-0.onrender.com/api/patient-records/${patientId}/`);
+        const patientResponse = await this.$axios.get(`/patient-records/${patientId}/`);
         this.patient = patientResponse.data.patient;
         this.appointments = patientResponse.data.appointments;
   

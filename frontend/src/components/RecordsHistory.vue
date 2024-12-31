@@ -57,7 +57,7 @@
     methods: {
       async fetchPatientRecords() {
         try {
-          const response = await axios.get("https://careconnected-backend-v1-0.onrender.com/api/patient-records/");
+          const response = await this.$axios.get("/patient-records/");
           this.patients = response.data;
           console.log("patient dats", response.data);
           this.filteredPatients = response.data; // Initially show all patients

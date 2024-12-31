@@ -1,49 +1,69 @@
 <!-- SignUpPage.vue -->
+
 <template>
   <div id="app">
     <div class="loginBox">
       <div class="inner">
         <div class="register">
           <div class="top">
-            <img class="logo" src="/assets/logo1.jpeg" />
+            <img class="logo" src="/assets/logo1.jpeg" alt="Logo" />
             <div class="title">Create an Account</div>
             <div class="subtitle">
               Already have an account?
-              <router-link class="subtitle-action" to="/">Sign In</router-link>
+              <router-link class="subtitle-action" to="/signin">Sign In</router-link>
             </div>
+          </div>
+
+          <!-- Display error message -->
+          <div v-if="error" class="error-message">
+            {{ error }}
           </div>
 
           <form @submit.prevent="signUp">
             <div class="form">
+              <label for="firstName">First Name</label>
               <input
+                id="firstName"
                 type="text"
                 placeholder="First Name"
                 v-model="firstName"
                 class="w100"
                 required
               />
+
+              <label for="lastName">Last Name</label>
               <input
+                id="lastName"
                 type="text"
                 placeholder="Last Name"
                 v-model="lastName"
                 class="w100"
                 required
               />
+
+              <label for="employeeId">Employee ID</label>
               <input
-                type="text"
+                id="employeeId"
+                type="text" 
                 placeholder="Employee ID"
                 v-model="employeeId"
                 class="w100"
                 required
               />
+
+              <label for="password">Password</label>
               <input
+                id="password"
                 type="password"
                 placeholder="Password"
                 v-model="password"
                 class="w100"
                 required
               />
+
+              <label for="confirmPassword">Confirm Password</label>
               <input
+                id="confirmPassword"
                 type="password"
                 placeholder="Confirm Password"
                 v-model="confirmPassword"
@@ -52,8 +72,13 @@
               />
             </div>
 
-            <button type="submit" class="action" :disabled="!registerValid">
-              Create Account
+            <button
+              type="submit"
+              class="action"
+              :disabled="!registerValid || isLoading"
+            >
+              <span v-if="isLoading">Creating Account...</span>
+              <span v-else>Create Account</span>
             </button>
           </form>
         </div>
@@ -63,10 +88,16 @@
 </template>
 
 <script>
+import { useAuthStore } from '@/store/auth';
 import Swal from 'sweetalert2';
-import { getCSRFToken } from '../store/auth'
 
 export default {
+  setup() {
+    const authStore = useAuthStore();
+    return {
+      authStore,
+    };
+  },
   data() {
     return {
       firstName: '',
@@ -75,6 +106,7 @@ export default {
       password: '',
       confirmPassword: '',
       error: '',
+      isLoading: false, // Loading state
     };
   },
   computed: {
@@ -96,41 +128,33 @@ export default {
         setTimeout(() => (this.error = ''), 3000);
         return;
       }
+
+      this.isLoading = true;
+
       try {
-        const response = await fetch('https://careconnected-backend-v1-0.onrender.com/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken(),
-          },
-          body: JSON.stringify({
-            first_name: this.firstName,
-            last_name: this.lastName,
-            employee_id: this.employeeId,
-            password: this.password,
-          }),
-          credentials: 'include',
+        await this.authStore.register({
+          first_name: this.firstName,
+          last_name: this.lastName,
+          employee_id: this.employeeId,
+          password: this.password,
         });
-        const data = await response.json();
-        if (response.ok) {
-          // SweetAlert success popup
-          Swal.fire({
-            title: 'Account Created Successfully!',
-            text: 'Please sign in with your new credentials.',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            background: '#f0f8ff',
-            confirmButtonColor: '#4CAF50',
-            iconColor: '#4CAF50',
-          }).then(() => {
-            this.$router.push('/');
-          });
-        } else {
-          this.error = data.error || 'Registration failed';
-        }
+
+        // SweetAlert success popup
+        await Swal.fire({
+          title: 'Account Created Successfully!',
+          text: 'Please sign in with your new credentials.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          background: '#f0f8ff',
+          confirmButtonColor: '#4CAF50',
+          iconColor: '#4CAF50',
+        });
+
+        this.$router.push({ name: 'WelcomePage' });
       } catch (err) {
-        this.error = 'An error occurred during registration: ' + err;
-        setTimeout(() => (this.error = ''), 3000);
+        this.error = 'An error occurred during registration.';
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -251,6 +275,8 @@ export default {
     animation: slideInTop 1s;
   }
   
+  
+
   @keyframes slideInTop {
     from {
       opacity: 0;
@@ -282,5 +308,16 @@ export default {
       max-height: 600px;
     }
   }
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.action:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
 </style>
   

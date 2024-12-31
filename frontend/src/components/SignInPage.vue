@@ -1,14 +1,12 @@
 <!-- SignInPage.vue -->
+
 <template>
   <div id="app">
     <div class="loginBox">
       <div class="inner">
         <div class="signIn">
           <div class="top">
-            <img
-              class="logo"
-              src="/assets/logo1.jpeg"
-            />
+            <img class="logo" src="/assets/logo1.jpeg" alt="Logo" />
             <div class="title">Sign In</div>
             <div class="subtitle">
               Don't have an account?
@@ -37,10 +35,12 @@
                 v-model="password"
               />
             </div>
-            <button type="submit" class="action" :disabled="!loginValid">Sign In</button>
+            <button type="submit" class="action" :disabled="!loginValid || isLoading">
+              <span v-if="isLoading">Signing In...</span>
+              <span v-else>Sign In</span>
+            </button>
           </form>
           <p v-if="error" class="error">{{ error }}</p>
-
         </div>
       </div>
     </div>
@@ -48,56 +48,48 @@
 </template>
 
 <script>
-      import { useAuthStore } from '../store/auth'
+import { useAuthStore } from '@/store/auth';
 
-      export default {
-      setup() {
-          const authStore = useAuthStore()
-          return {
-          authStore
-          }
-      },
-      data() {
-          return {
-          employeeId: "", // Renamed for consistency
-          password: "",
-          error: ""
-          }
-      },
-      computed: {
-          loginValid() {
-          return this.employeeId && this.password;
-          }
-      },
-      methods: {
-          async signIn() {
-          try {
-              await this.authStore.login(this.employeeId, this.password, this.$router)
-              if (!this.authStore.isAuthenticated) {
-              this.error = 'Login failed. Please check your credentials.'
-              }
-          } catch (err) {
-              this.error = 'An error occurred during login.'
-          }
-          },
-          resetError() {
-          this.error = ""
-          }
+export default {
+  setup() {
+    const authStore = useAuthStore();
+    return {
+      authStore,
+    };
+  },
+  data() {
+    return {
+      employeeId: "",
+      password: "",
+      error: "",
+      isLoading: false,
+    };
+  },
+  computed: {
+    loginValid() {
+      return this.employeeId && this.password;
+    },
+  },
+  methods: {
+    async signIn() {
+      this.isLoading = true;
+      try {
+        await this.authStore.login(this.employeeId, this.password);
+        if (!this.authStore.isAuthenticated) {
+          this.error = 'Login failed. Please check your credentials.';
+        }
+      } catch (err) {
+        this.error = 'An error occurred during login.';
+      } finally {
+        this.isLoading = false;
       }
-      }
+    },
+  },
+};
 </script>
 
 
-
 <style lang="scss" scoped>
-
-  // Style for the error message
-  .error {
-    color: red;
-    margin-top: 10px;
-    font-size: 0.9rem;
-    }
-
 
   html, body, #app {
     height: 100%;
@@ -243,5 +235,17 @@
       max-width: 100vw;
       
     }
+  }
+
+    /* Optional: Style for the loading state */
+  .action:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+
+  .error {
+    color: red;
+    margin-top: 10px;
+    font-size: 0.9rem;
   }
   </style>

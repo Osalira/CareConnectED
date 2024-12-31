@@ -1,7 +1,8 @@
 # backend/appointments/views.py
 from django.db.models import Q  # Import Q for complex queries
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.utils import timezone
 from datetime import timedelta
@@ -18,6 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
+@permission_classes([AllowAny])  # Allow unauthenticated users to register
 def book_appointment(request):
     serializer = AppointmentSerializer(data=request.data)
     if serializer.is_valid():

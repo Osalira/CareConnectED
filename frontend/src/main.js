@@ -1,41 +1,60 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-import router from './router'
-import App from './App.vue'
-import { useAuthStore } from './store/auth'
-//
+import { createApp } from 'vue';
+import pinia from './store'; // Import the configured Pinia instance
+import router from './router'; // Import Vue Router
+import App from './App.vue';
+
+// Import Bootstrap CSS and JS
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
 
-//import './style.css' // Replace with your custom styles if needed
+// Import Axios instance
+import axiosInstance from '@/utils/axiosInstance.js';
 
-const app = createApp(App)
+// Import the authentication store
+import { useAuthStore } from './store/auth';
 
-// Click-outside directive
-app.directive('click-outside', {
-    beforeMount(el, binding) {
-      el.clickOutsideEvent = (event) => {
-        if (!(el === event.target || el.contains(event.target))) {
-          binding.value(event); // Call the provided callback
-        }
-      };
-      document.addEventListener('click', el.clickOutsideEvent);
-    },
-    unmounted(el) {
-      document.removeEventListener('click', el.clickOutsideEvent);
-    },
-  });
-// Set up Pinia for state management
-app.use(createPinia())
+// Immediately Invoked Function Expression (IIFE)
+(async () => {
+  try {
+    // Initialize the app
+    const app = createApp(App);
 
-// Set up Vue Router
-app.use(router)
+    // Make Axios globally available
+    app.config.globalProperties.$axios = axiosInstance;
 
-// Initialize the auth store and set CSRF token
-const authStore = useAuthStore()
-authStore.setCsrfToken()
+    // Register the 'click-outside' directive
+    app.directive('click-outside', {
+      beforeMount(el, binding) {
+        el.clickOutsideEvent = (event) => {
+          if (!(el === event.target || el.contains(event.target))) {
+            binding.value(event); // Invoke the callback provided in the directive
+          }
+        };
+        document.addEventListener('click', el.clickOutsideEvent);
+      },
+      unmounted(el) {
+        document.removeEventListener('click', el.clickOutsideEvent);
+      },
+    });
 
-// Mount the app to the #app element in index.html
-app.mount('#app')
+    // Use Pinia for state management
+    app.use(pinia);
+
+    // Use Vue Router
+    app.use(router);
+
+    // Initialize the auth store and set CSRF token
+    const authStore = useAuthStore();
+   ; // Ensure CSRF token is set before proceeding
+
+    // console.log('CSRF token successfully set.');
+
+    // Mount the app to the DOM
+    app.mount('#app');
+  } catch (error) {
+    console.error('Failed to initialize the application:', error);
+    // Optionally, handle initialization failure (e.g., redirect to an error page or show a message)
+  }
+})();

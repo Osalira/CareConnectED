@@ -95,7 +95,6 @@
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../store/auth';
-import axios from 'axios';
 import { debounce } from 'lodash';
 
 
@@ -168,7 +167,7 @@ export default {
     const handleInput = debounce(async () => {
       if (searchQuery.value.length > 0) {
         try {
-          const response = await axios.get(`https://careconnected-backend-v1-0.onrender.com/api/patient_records_nav_search/`, {
+          const response = await this.$axios.get(`/patient_records_nav_search/`, {
             params: { query: searchQuery.value }
           });
           searchResults.value = response.data;

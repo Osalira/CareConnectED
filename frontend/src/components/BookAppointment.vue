@@ -73,7 +73,6 @@
   
   <script>
   import Swal from 'sweetalert2';
-  import axios from 'axios';
   import { useSeverityStore } from '../store/severity';
   
   
@@ -99,7 +98,7 @@
     methods: {
       async submitAppointment() {
         try {
-          const response = await axios.post('https://careconnected-backend-v1-0.onrender.com/api/appointments/', {
+          const response = await this.$axios.post('/appointments/', {
               patient: {
                 first_name: this.firstName,
                 last_name: this.lastName,
@@ -138,7 +137,7 @@
         //   this.$router.push('/'); // Redirect after successful submission
           setTimeout(() => {
             this.$router.push('/'); //Wait half a second before redirecting
-          }, 5000);
+          }, 3000);
         } catch (error) {
           console.error('Error booking appointment:', error);
         }
