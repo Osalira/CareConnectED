@@ -321,5 +321,17 @@ export default {
   background: #aaa;
   cursor: not-allowed;
 }
+
+.form label {
+  display: block; /* Ensures the label is above the input */
+  margin-top: 10px;
+  margin-bottom: 5px; /* Reduces space between label and input */
+  font-weight: bold; /* Optional: Makes the label stand out */
+}
+
+.form input {
+  margin-top: 0; /* Removes unnecessary top margin from input */
+}
+
 </style>
   
