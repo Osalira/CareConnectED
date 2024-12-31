@@ -14,6 +14,7 @@ from .forms import CreateEmployeeForm  # Import the updated form
 import json
 
 # Custom JWT Token Obtain Pair View
+# Custom Token Obtain Pair View
 class CustomTokenObtainPairView(TokenObtainPairView):
     """
     Custom view to obtain JWT tokens with additional user data.
@@ -36,8 +37,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             'user': {
                 'first_name': user.first_name,
                 'last_name': user.last_name,
-                'employee_id': user.employee_id,
-                # Add other user fields as needed employeeId
+                'employee_id': user.employee_id
+                # Add other user fields as needed
             }
         })
 
@@ -77,14 +78,14 @@ def logout_view(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def user(request):
+def user_info(request):
     """
     Retrieve authenticated user information.
     """
     return JsonResponse(
         {
-            'employee_id': request.user.employee_id, 
-            'first_name': request.user.first_name, 
+            'employee_id': request.user.employee_id,
+            'first_name': request.user.first_name,
             'last_name': request.user.last_name
         },
         status=200

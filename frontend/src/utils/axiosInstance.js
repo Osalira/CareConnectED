@@ -33,17 +33,14 @@ axiosInstance.interceptors.response.use(
         // If Unauthorized, attempt to refresh the token
         if (error.response && error.response.status === 401 && authStore.refreshToken) {
             try {
-                const response = await axios.post(`${axiosInstance.defaults.baseURL}/token/refresh/`, {
-                    refresh: authStore.refreshToken,
-                });
-                authStore.accessToken = response.data.access;
+                await authStore.refreshAccessToken();
                 // Retry the original request with the new access token
                 error.config.headers['Authorization'] = `Bearer ${authStore.accessToken}`;
                 return axiosInstance(error.config);
             } catch (refreshError) {
                 // Refresh token is invalid or expired, logout the user
                 authStore.logout();
-                router.push({ name: 'WelcomePage' });
+                router.push({ name: 'SignInPage' });
                 return Promise.reject(refreshError);
             }
         }

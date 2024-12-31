@@ -1,3 +1,5 @@
+// src/main.js
+
 import { createApp } from 'vue';
 import pinia from './store'; // Import the configured Pinia instance
 import router from './router'; // Import Vue Router
@@ -45,11 +47,14 @@ import { useAuthStore } from './store/auth';
     // Use Vue Router
     app.use(router);
 
-    // Initialize the auth store and set CSRF token
+    // Initialize the auth store
     const authStore = useAuthStore();
-   ; // Ensure CSRF token is set before proceeding
 
-    // console.log('CSRF token successfully set.');
+    // If a refresh token exists, attempt to refresh the access token
+    if (authStore.refreshToken) {
+      await authStore.refreshAccessToken();
+      await authStore.fetchUser();
+    }
 
     // Mount the app to the DOM
     app.mount('#app');
